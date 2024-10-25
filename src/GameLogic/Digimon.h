@@ -38,6 +38,8 @@ struct DigimonProperties {
     char* digiName; //Name of the Digimon
     uint8_t stage; //baby rookie adult etc.
     uint16_t minWeight;
+    uint16_t hungerIntervalSec; //the time it takes for hunger to decrease in seconds
+    uint16_t strengthIntervalSec; //the time it takes for strength to decrease in seconds
     uint8_t stomachCapacity;
     uint8_t maxDigimonPower;
 
@@ -75,9 +77,9 @@ struct NormalEvolutionData {
 
 
 const DigimonProperties DIGIMON_DATA[N_DIGIMON] PROGMEM = {
-    {"Agumon",STAGE_ROOKIE,20,24,20,19,8,POOP_FREQUENCY_ROOKIE,EVOLUTION_TIME_ROOKIE,TYPE_DATA,0x03,0},
-    {"Koromon",STAGE_BABY2,10,16,0 ,19,8,POOP_FREQUENCY_BABY2,EVOLUTION_TIME_BABY2,TYPE_DATA,0x03,1},
-    {"Botamon",STAGE_BABY1,5 ,4 ,0 ,19,8,POOP_FREQUENCY_BABY1,EVOLUTION_TIME_BABY1 ,TYPE_DATA,0x03,1},
+    {"Agumon",STAGE_ROOKIE,20,2880,2880,24,20,19,8,POOP_FREQUENCY_ROOKIE,EVOLUTION_TIME_ROOKIE,TYPE_DATA,0x03,0},
+    {"Koromon",STAGE_BABY2,10,1800,1800,16,0 ,19,8,POOP_FREQUENCY_BABY2,EVOLUTION_TIME_BABY2,TYPE_DATA,0x03,1},
+    {"Botamon",STAGE_BABY1,5 ,180 ,180 ,4 ,0 ,19,8,POOP_FREQUENCY_BABY1,EVOLUTION_TIME_BABY1 ,TYPE_DATA,0x03,1},
 
 };
 
@@ -113,10 +115,13 @@ class Digimon{
         uint16_t careMistakes;
         uint16_t trainingCounter;
         uint8_t numberOfPoops;
-        uint8_t hunger=10;
-        uint8_t strength;
+        uint8_t hunger=0;
+        uint16_t appetite=0;
+        uint8_t strength=0;
         uint8_t effort;
         uint8_t digimonPower; //dp
+        uint8_t hungerHeartsCount=0;
+        uint8_t strengthHeartsCount=0;
 
         uint8_t sicknessCounter;
         boolean isSick;
@@ -130,6 +135,8 @@ class Digimon{
 
         //timers
         unsigned long poopTimer;
+        unsigned long hungerTimer;
+        unsigned long strengthTimer;
         unsigned long ageTimer;
         unsigned long evolutionTimer;
 
@@ -152,6 +159,8 @@ class Digimon{
         void setCareMistakes(uint16_t _careMistakes){careMistakes=_careMistakes;};
         void setTrainingCounter( uint16_t _trainingCounter){trainingCounter=_trainingCounter;};
         void setPoopTimer(unsigned long _poopTimer){poopTimer=_poopTimer;};
+        void setHungerTimer(unsigned long _hungerTimer){hungerTimer=_hungerTimer;};
+        void setStrengthTimer(unsigned long _hungerTimer){hungerTimer=_hungerTimer;};
         void setAgeTimer(unsigned long _ageTimer){ageTimer=_ageTimer;};
         void setEvolutionTimer(unsigned long _evolutionTimer){evolutionTimer=_evolutionTimer;};
 
@@ -160,6 +169,10 @@ class Digimon{
         void setStrength(uint8_t _strength){strength=_strength;};
         void setEffort(uint8_t _effort){effort=_effort;};
         void setDigimonPower(uint8_t _digimonPower){digimonPower=_digimonPower;};
+        void setHungerHeartsCount(uint8_t _hungerHeartsCount){hungerHeartsCount=_hungerHeartsCount;};
+        void setStrengthHeartsCount(uint8_t _strengthHeartsCount){strengthHeartsCount=_strengthHeartsCount;};
+        void setAppetite(uint16_t _appetite){appetite=_appetite;};
+
         
         //getters
         
@@ -172,6 +185,8 @@ class Digimon{
         uint16_t getCareMistakes(){return careMistakes;};
         uint16_t getTrainingCounter(){return trainingCounter;};
         unsigned long getPoopTimer(){return poopTimer;};
+        unsigned long getHungerTimer(){return hungerTimer;};
+        unsigned long getStrengthTimer(){return strengthTimer;};
         unsigned long getAgeTimer(){return ageTimer;};
         unsigned long getEvolutionTimer(){return evolutionTimer;};
         uint8_t getNumberOfPoops(){return numberOfPoops;};
@@ -179,15 +194,24 @@ class Digimon{
         uint8_t getStrength(){return strength;};
         uint8_t getEffort(){return effort;};
         uint8_t getDigimonPower(){return digimonPower;};
+        uint8_t getHungerHeartsCount(){return hungerHeartsCount;};
+        uint8_t getStrengthHeartsCount(){return strengthHeartsCount;};
+        uint16_t getAppetite(){return appetite;};
      
 
 
         void printSerial();
         void reduceHunger(int8_t amount){hunger-=amount;};
+        void addHunger(int8_t amount){hunger+=amount;};
+        void reduceAppetite(int8_t amount){appetite-=amount;};
+        void addAppetite(int8_t amount){appetite+=amount;};
+        void reduceStrength(int8_t amount){strength-=amount;};
+        void addStrength(int8_t amount){strength+=amount;};
         void addWeight(int8_t w){weight+=w;};
         void loseWeight(int8_t w){weight-=w;};
-        void addStrength(int8_t s){strength+=s;};
-        void loseStrength(int8_t s){strength -=s;};
+        // void addStrength(int8_t s){strength+=s;};
+        // void loseStrength(int8_t s){strength -=s;};
 
         void addDigimonPower(int8_t dp){digimonPower+=dp;};
+
 };

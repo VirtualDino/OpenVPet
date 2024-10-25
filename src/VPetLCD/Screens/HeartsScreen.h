@@ -13,7 +13,7 @@ namespace V20{
   class HeartsScreen : public VPetLCD::Screen{
     private:
       uint16_t maxHearts;
-      uint16_t hearts;
+      uint8_t hearts;
       char* text;
 
     public:
