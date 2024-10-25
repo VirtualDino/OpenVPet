@@ -74,8 +74,10 @@ VPetLCDMenuBar32p menuBar(7,5,displayHeight);
 V20::DigimonWatchingScreen digimonScreen(&spriteManager, digimon.getDigimonIndex(), -8, 40, 0, 0);
 V20::DigimonNameScreen digiNameScreen(&spriteManager, dataLoader.getDigimonProperties(digiIndex)->digiName, digimon.getDigimonIndex(), 24);
 V20::AgeWeightScreen ageWeightScreen(5, 21);
-V20::HeartsScreen hungryScreen("Hungry", 2, 4);
-V20::HeartsScreen strengthScreen("Strength", 3, 4);
+// V20::HeartsScreen hungryScreen("Hungry", 2, 4);
+V20::HeartsScreen hungryScreen("Hungry", digimon.getHungerHeartsCount(), 4);
+// V20::HeartsScreen strengthScreen("Strength", 3, 4);
+V20::HeartsScreen strengthScreen("Strength", digimon.getStrengthHeartsCount(), 4);
 V20::HeartsScreen effortScreen("Effort", 4, 4);
 V20::ProgressBarScreen dpScreen("DP", 29, 40);
 V20::PercentageScreen sPercentageScreen("WIN", 'S', 100);
@@ -162,7 +164,9 @@ void stateMachineInit() {
     switch (menuBar.getSelection()) {
     case 0:
       digiNameScreen.setDigimonSpriteIndex(digimon.getDigimonIndex());
-      hungryScreen.setHearts(4-4*digimon.getHunger()/10);
+      // hungryScreen.setHearts(4-4*digimon.getHunger()/10);
+      hungryScreen.setHearts(digimon.getHungerHeartsCount());
+      strengthScreen.setHearts(digimon.getStrengthHeartsCount());
       
       if(maxdp >0){
         dpScreen.setFillPercentage((digimon.getDigimonPower()*100)/maxdp);
@@ -208,7 +212,17 @@ void stateMachineInit() {
     switch (selection) {
     case 0:
       digimon.addWeight(1);
-      digimon.reduceHunger(1);
+      // digimon.reduceHunger(1);
+      digimon.addAppetite(1);
+
+      if (digimon.getAppetite() < 0) {
+        digimon.setHungerHeartsCount(0);
+      } else if (digimon.getAppetite() > 4) {
+        digimon.setHungerHeartsCount(4);
+      } else {
+        digimon.setHungerHeartsCount(digimon.getAppetite());
+      }
+
       eatingAnimationScreen.setSprites(SYMBOL_MEAT, SYMBOL_HALF_MEAT,SYMBOL_EMPTY_MEAT);
       eatingAnimationScreen.startAnimation();
       stateMachine.setCurrentScreen(eatingAnimationScreenId);
@@ -217,6 +231,15 @@ void stateMachineInit() {
       digimon.addWeight(2);
       digimon.addStrength(2);
       digimon.addDigimonPower(2);
+
+      if (digimon.getStrength() < 0) {
+        digimon.setStrengthHeartsCount(0);
+      } else if (digimon.getStrength() > 4) {
+        digimon.setStrengthHeartsCount(4);
+      } else {
+        digimon.setStrengthHeartsCount(digimon.getStrength());
+      }
+
       eatingAnimationScreen.setSprites(SYMBOL_PILL, SYMBOL_HALF_PILL,SYMBOL_EMPTY);
       eatingAnimationScreen.startAnimation();
       stateMachine.setCurrentScreen(eatingAnimationScreenId);
