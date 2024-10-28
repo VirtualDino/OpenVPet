@@ -214,6 +214,7 @@ void stateMachineInit() {
       digimon.addWeight(1);
       // digimon.reduceHunger(1);
       digimon.addAppetite(1);
+      digimon.setHungerCallCheck(false);
 
       if (digimon.getAppetite() < 0) {
         digimon.setHungerHeartsCount(0);
@@ -229,8 +230,10 @@ void stateMachineInit() {
       break;
     case 1:
       digimon.addWeight(2);
-      digimon.addStrength(2);
+      digimon.addStrength(1);
       digimon.addDigimonPower(2);
+      digimon.increaseOverdoseTracker(1);
+      digimon.setStrengthCallCheck(false);
 
       if (digimon.getStrength() < 0) {
         digimon.setStrengthHeartsCount(0);
@@ -238,6 +241,13 @@ void stateMachineInit() {
         digimon.setStrengthHeartsCount(4);
       } else {
         digimon.setStrengthHeartsCount(digimon.getStrength());
+      }
+
+      if (digimon.getOverdoseTracker() == 4 && digimon.getOverdoseCount() < 7) {
+        digimon.increaseOverdoseCount(1);
+        digimon.setOverdoseTracker(0);
+      } else if (digimon.getOverdoseTracker() == 4 && digimon.getOverdoseCount() == 7) {
+        digimon.setOverdoseTracker(0);
       }
 
       eatingAnimationScreen.setSprites(SYMBOL_PILL, SYMBOL_HALF_PILL,SYMBOL_EMPTY);

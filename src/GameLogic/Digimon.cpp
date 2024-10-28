@@ -11,7 +11,9 @@ void Digimon::printSerial(){
   Serial.println(getTrainingCounter());
   Serial.println(getPoopTimer());
   Serial.println(getHungerTimer());
+  Serial.println(getHungerMistakeTimer());
   Serial.println(getStrengthTimer());
+  Serial.println(getStrengthMistakeTimer());
   Serial.println(getAgeTimer());
   Serial.println(getEvolutionTimer());
 }
@@ -46,6 +48,22 @@ void Digimon::updateTimers(unsigned long delta){
         }
     }
 
+    if (appetite == 0 && hungerCallCheck == false) {
+        // Trigger call sound
+        // ...
+        hungerMistakeTimer += delta;
+        if (hungerTimer > 600000) {
+            setHungerCallCheck(true);
+        }
+    } else if (appetite == 0 && hungerCallCheck == true) {
+        // Trigger call sound
+        // ...
+        hungerMistakeTimer += delta;
+        if (hungerTimer > 600000) {
+            addCareMistake(1);
+        }
+    }
+
     if(strength > 0) {
         strengthTimer += delta;
         if (strengthTimer > properties->strengthIntervalSec*1000){
@@ -58,6 +76,22 @@ void Digimon::updateTimers(unsigned long delta){
             } else {
                 setStrengthHeartsCount(strength);
             }
+        }
+    }
+
+    if (strength == 0 && strengthCallCheck == false) {
+        // Trigger call sound
+        // ...
+        strengthMistakeTimer += delta;
+        if (strengthTimer > 600000) {
+            setStrengthCallCheck(true);
+        }
+    } else if (strength == 0 && strengthCallCheck == true) {
+        // Trigger call sound
+        // ...
+        strengthMistakeTimer += delta;
+        if (strengthMistakeTimer > 600000) {
+            addCareMistake(1);
         }
     }
 

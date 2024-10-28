@@ -42,6 +42,8 @@ struct DigimonProperties {
     uint16_t strengthIntervalSec; //the time it takes for strength to decrease in seconds
     uint8_t stomachCapacity;
     uint8_t maxDigimonPower;
+    uint8_t healDoses; // Number of doses required when healing. Varies per digimon.
+    uint8_t sleepTime; // Time the digimon goes to sleep. Value from 1-24.
 
     uint8_t sleepHour;//at what time the digimon begins sleeping (0-23)
     uint8_t wakeUpHour;//at what time the digimon wakes up(0-23)
@@ -77,9 +79,9 @@ struct NormalEvolutionData {
 
 
 const DigimonProperties DIGIMON_DATA[N_DIGIMON] PROGMEM = {
-    {"Agumon",STAGE_ROOKIE,20,2880,2880,24,20,19,8,POOP_FREQUENCY_ROOKIE,EVOLUTION_TIME_ROOKIE,TYPE_DATA,0x03,0},
-    {"Koromon",STAGE_BABY2,10,1800,1800,16,0 ,19,8,POOP_FREQUENCY_BABY2,EVOLUTION_TIME_BABY2,TYPE_DATA,0x03,1},
-    {"Botamon",STAGE_BABY1,5 ,180 ,180 ,4 ,0 ,19,8,POOP_FREQUENCY_BABY1,EVOLUTION_TIME_BABY1 ,TYPE_DATA,0x03,1},
+    {"Agumon",STAGE_ROOKIE,20,2880,2880,24,20,2 ,20,19,8,POOP_FREQUENCY_ROOKIE,EVOLUTION_TIME_ROOKIE,TYPE_DATA,0x03,0},
+    {"Koromon",STAGE_BABY2,10,1800,1800,16,0 ,1 ,20,19,8,POOP_FREQUENCY_BABY2,EVOLUTION_TIME_BABY2,TYPE_DATA,0x03,1},
+    {"Botamon",STAGE_BABY1,5 ,180 ,180 ,4 ,0 ,1 ,20,19,8,POOP_FREQUENCY_BABY1,EVOLUTION_TIME_BABY1 ,TYPE_DATA,0x03,1},
 
 };
 
@@ -112,7 +114,7 @@ class Digimon{
         uint16_t age=0;
         uint16_t weight=0;
         uint16_t feedCounter;
-        uint16_t careMistakes;
+        uint16_t careMistakes=0;
         uint16_t trainingCounter;
         uint8_t numberOfPoops;
         uint8_t hunger=0;
@@ -122,6 +124,10 @@ class Digimon{
         uint8_t digimonPower; //dp
         uint8_t hungerHeartsCount=0;
         uint8_t strengthHeartsCount=0;
+        uint8_t overdoseCount;
+        uint8_t overdoseTracker; // Every 4 protein consumed = 1 OD. Track progress towards OD.
+        boolean hungerCallCheck; // Digimon calls twice when it needs help. This variable checks if it has called once already so a care mistake can be applied.
+        boolean strengthCallCheck;
 
         uint8_t sicknessCounter;
         boolean isSick;
@@ -136,7 +142,9 @@ class Digimon{
         //timers
         unsigned long poopTimer;
         unsigned long hungerTimer;
+        unsigned long hungerMistakeTimer;
         unsigned long strengthTimer;
+        unsigned long strengthMistakeTimer;
         unsigned long ageTimer;
         unsigned long evolutionTimer;
 
@@ -160,7 +168,9 @@ class Digimon{
         void setTrainingCounter( uint16_t _trainingCounter){trainingCounter=_trainingCounter;};
         void setPoopTimer(unsigned long _poopTimer){poopTimer=_poopTimer;};
         void setHungerTimer(unsigned long _hungerTimer){hungerTimer=_hungerTimer;};
-        void setStrengthTimer(unsigned long _hungerTimer){hungerTimer=_hungerTimer;};
+        void setHungerMistakeTimer(unsigned long _hungerMistakeTimer){hungerMistakeTimer=_hungerMistakeTimer;};
+        void setStrengthTimer(unsigned long _strengthTimer){strengthTimer=_strengthTimer;};
+        void setStrengthMistakeTimer(unsigned long _strengthMistakeTimer){strengthMistakeTimer=_strengthMistakeTimer;};
         void setAgeTimer(unsigned long _ageTimer){ageTimer=_ageTimer;};
         void setEvolutionTimer(unsigned long _evolutionTimer){evolutionTimer=_evolutionTimer;};
 
@@ -172,6 +182,10 @@ class Digimon{
         void setHungerHeartsCount(uint8_t _hungerHeartsCount){hungerHeartsCount=_hungerHeartsCount;};
         void setStrengthHeartsCount(uint8_t _strengthHeartsCount){strengthHeartsCount=_strengthHeartsCount;};
         void setAppetite(uint16_t _appetite){appetite=_appetite;};
+        void setOverdoseCount(uint8_t _overdoseCount){overdoseCount=_overdoseCount;};
+        void setOverdoseTracker(uint8_t _overdoseTracker){overdoseTracker=_overdoseTracker;};
+        void setHungerCallCheck(boolean _hungerCallCheck){hungerCallCheck=_hungerCallCheck;};
+        void setStrengthCallCheck(boolean _strengthCallCheck){strengthCallCheck=_strengthCallCheck;};
 
         
         //getters
@@ -186,7 +200,9 @@ class Digimon{
         uint16_t getTrainingCounter(){return trainingCounter;};
         unsigned long getPoopTimer(){return poopTimer;};
         unsigned long getHungerTimer(){return hungerTimer;};
+        unsigned long getHungerMistakeTimer(){return hungerMistakeTimer;};
         unsigned long getStrengthTimer(){return strengthTimer;};
+        unsigned long getStrengthMistakeTimer(){return strengthMistakeTimer;};
         unsigned long getAgeTimer(){return ageTimer;};
         unsigned long getEvolutionTimer(){return evolutionTimer;};
         uint8_t getNumberOfPoops(){return numberOfPoops;};
@@ -197,6 +213,8 @@ class Digimon{
         uint8_t getHungerHeartsCount(){return hungerHeartsCount;};
         uint8_t getStrengthHeartsCount(){return strengthHeartsCount;};
         uint16_t getAppetite(){return appetite;};
+        uint8_t getOverdoseCount(){return overdoseCount;};
+        uint8_t getOverdoseTracker(){return overdoseTracker;};
      
 
 
@@ -209,6 +227,9 @@ class Digimon{
         void addStrength(int8_t amount){strength+=amount;};
         void addWeight(int8_t w){weight+=w;};
         void loseWeight(int8_t w){weight-=w;};
+        void increaseOverdoseCount(int8_t od){overdoseCount+=od;};
+        void increaseOverdoseTracker(int8_t amount){overdoseTracker+=amount;};
+        void addCareMistake(int8_t m){careMistakes+=m;};
         // void addStrength(int8_t s){strength+=s;};
         // void loseStrength(int8_t s){strength -=s;};
 
