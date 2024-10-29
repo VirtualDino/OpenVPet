@@ -125,7 +125,7 @@ class Digimon{
         uint16_t feedCounter;
         uint16_t careMistakes=0;
         uint16_t trainingCounter;
-        uint8_t numberOfPoops;
+        uint8_t numberOfPoops=0;
         uint8_t hunger=0;
         uint16_t appetite=0;
         uint8_t strength=0;
