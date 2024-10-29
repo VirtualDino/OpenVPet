@@ -26,12 +26,6 @@ void Digimon::loop(unsigned long delta){
 
 
 void Digimon::updateTimers(unsigned long delta){
-    poopTimer += delta;
-    if(poopTimer > properties->poopTimeSec*1000){
-        poopTimer %= properties->poopTimeSec*1000;
-        numberOfPoops++;
-        loseWeight(1);
-    }
 
     if (getNumberOfPoops() < 4) {
         if(poopTimer > properties->poopTimeSec*1000){
