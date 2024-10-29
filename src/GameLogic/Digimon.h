@@ -21,12 +21,23 @@
 #define STAGE_ULTIMATE 5
 #define STAGE_SUPER_ULTIMATE 6
 
+// #define POOP_FREQUENCY_BABY1 60*3 //3 minutes
+// #define POOP_FREQUENCY_BABY2 60*30 //30 minutes
+// #define POOP_FREQUENCY_ROOKIE 60*60 // 1hour
+// #define POOP_FREQUENCY_ADULT 60*70 // 70 minutes
+// #define POOP_FREQUENCY_PERFECT 60*80
+// #define POOP_FREQUENCY_ULTIMATE 60*100
+
+// NOTE: I'm unsure about the poop frequency. Below is the poop frequency for the Ver. COLOR devices, but it seems like the frequency
+// varies per device? I neeed to confirm this and make  decision about the frequency we should use. Leave the above for now, I wil
+// remove it soon.
+
 #define POOP_FREQUENCY_BABY1 60*3 //3 minutes
-#define POOP_FREQUENCY_BABY2 60*30 //30 minutes
-#define POOP_FREQUENCY_ROOKIE 60*60 // 1hour
-#define POOP_FREQUENCY_ADULT 60*70 // 70 minutes
-#define POOP_FREQUENCY_PERFECT 60*80
-#define POOP_FREQUENCY_ULTIMATE 60*100
+#define POOP_FREQUENCY_BABY2 60*60 //60 minutes
+#define POOP_FREQUENCY_ROOKIE 60*120 // 120 minutes
+#define POOP_FREQUENCY_ADULT 60*120
+#define POOP_FREQUENCY_PERFECT 60*120
+#define POOP_FREQUENCY_ULTIMATE 60*120
 
 #define EVOLUTION_TIME_BABY1 60*10 //Baby1->Baby2 takes 10 minutes
 #define EVOLUTION_TIME_BABY2 60*60*6 // Baby2->rookie takes 6 hours
