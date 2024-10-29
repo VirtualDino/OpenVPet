@@ -211,6 +211,8 @@ void stateMachineInit() {
     uint8_t selection = foodSelection.getSelection();
     switch (selection) {
     case 0:
+
+      if (digimon.getAppetite() < 14) {
       digimon.addWeight(1);
       // digimon.reduceHunger(1);
       digimon.addAppetite(1);
@@ -220,6 +222,9 @@ void stateMachineInit() {
         digimon.setHungerHeartsCount(0);
       } else if (digimon.getAppetite() > 4) {
         digimon.setHungerHeartsCount(4);
+      } else if (digimon.getAppetite() == 14) {
+        digimon.setOverfeedCheck(true);
+        digimon.addOverfeed(1);
       } else {
         digimon.setHungerHeartsCount(digimon.getAppetite());
       }
@@ -227,14 +232,18 @@ void stateMachineInit() {
       eatingAnimationScreen.setSprites(SYMBOL_MEAT, SYMBOL_HALF_MEAT,SYMBOL_EMPTY_MEAT);
       eatingAnimationScreen.startAnimation();
       stateMachine.setCurrentScreen(eatingAnimationScreenId);
+      } else {
+        // Play refusal animation
+      }
       break;
     case 1:
       digimon.addWeight(2);
       digimon.addStrength(1);
-      digimon.addDigimonPower(2);
+      // digimon.addDigimonPower(2);
       digimon.increaseOverdoseTracker(1);
       digimon.setStrengthCallCheck(false);
 
+      // Increase heart count
       if (digimon.getStrength() < 0) {
         digimon.setStrengthHeartsCount(0);
       } else if (digimon.getStrength() > 4) {
@@ -243,6 +252,14 @@ void stateMachineInit() {
         digimon.setStrengthHeartsCount(digimon.getStrength());
       }
 
+      // Increase DP for every 4 protein eaten
+      if (digimon.getOverdoseTracker() == 4) {
+        digimon.addDigimonPower(1);
+      }
+
+
+      // Increase overdose count for every 4 protein eated, for a maximum of 7
+      // Also resets OD tracker to zero.
       if (digimon.getOverdoseTracker() == 4 && digimon.getOverdoseCount() < 7) {
         digimon.increaseOverdoseCount(1);
         digimon.setOverdoseTracker(0);
