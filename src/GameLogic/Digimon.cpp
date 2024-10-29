@@ -33,6 +33,20 @@ void Digimon::updateTimers(unsigned long delta){
         loseWeight(1);
     }
 
+    if (getNumberOfPoops() < 4) {
+        if(poopTimer > properties->poopTimeSec*1000){
+            poopTimer %= properties->poopTimeSec*1000;
+            numberOfPoops++;
+            if (numberOfPoops == 4) {
+                setIsInjured(true);
+                addInjury(1);
+            }
+            if (getWeight() > properties->minWeight) {
+                loseWeight(1);
+            }
+        }
+    }
+
     if(appetite > 0) {
         hungerTimer += delta;
         if(hungerTimer > properties->hungerIntervalSec*1000){
@@ -40,8 +54,13 @@ void Digimon::updateTimers(unsigned long delta){
             reduceAppetite(1);
             if (appetite < 0) {
                 setHungerHeartsCount(0);
-            } else if (appetite > 4) {
+            } else if (appetite > 4 && appetite < 14) {
                 setHungerHeartsCount(4);
+            } else if (appetite == 14) {
+                // Overfeed essentially acts like a 5th heart
+                setHungerHeartsCount(4);
+                setAppetite(4);
+                setOverfeedCheck(false);
             } else {
                 setHungerHeartsCount(appetite);
             }
