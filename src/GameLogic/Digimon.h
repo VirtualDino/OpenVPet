@@ -7,7 +7,6 @@
 #define DIGIMON_KOROMON 1
 #define DIGIMON_BOTAMON 2
 #define DIGIMON_BETAMON 3
-#define DIGIMON_BETAMON 4
 
 #define TYPE_VACCINE 0
 #define TYPE_DATA 1
