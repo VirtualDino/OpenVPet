@@ -7,7 +7,7 @@
 #include "DigimonWatchingScreen.h"
 #include <Arduino.h>
 
-V20::DigimonWatchingScreen::DigimonWatchingScreen(AbstractSpriteManager* _spriteManager, uint8_t _digimonSpritesIndex, int8_t _minX, int8_t _maxX, int8_t _minY, int8_t _maxY) {
+V20::DigimonWatchingScreen::DigimonWatchingScreen(AbstractSpriteManager* _spriteManager, uint8_t _digimonSpritesIndex, uint8_t _digimonState, int8_t _minX, int8_t _maxX, int8_t _minY, int8_t _maxY) {
   setXLimitations(_minX, _maxX); // -8 32
   setYLimitations(_minY, _maxY);
   digimonX = 8;
@@ -23,6 +23,7 @@ V20::DigimonWatchingScreen::DigimonWatchingScreen(AbstractSpriteManager* _sprite
   poopAnimationCounter = 0;
   updateIntervallTime = 500;
   digimonSpritesIndex=_digimonSpritesIndex;
+  digimonState=_digimonState;
 }
 
 
@@ -161,10 +162,23 @@ void V20::DigimonWatchingScreen::drawWakedUp(VPetLCD* lcd) {
 }
 
 /**
+ * Draws the digimon sleeping
+ * */
+void V20::DigimonWatchingScreen::drawSleeping(VPetLCD* lcd, boolean inBed) {
+  const unsigned short* sprite = spriteManager->getDigimonSprite(digimonSpritesIndex, 11);
+  lcd->draw16BitArray(sprite, screenX + digimonX, screenY + digimonY, !looksLeft, pixelColor);
+}
+
+/**
  * draws the screen
  * */
 void V20::DigimonWatchingScreen::draw(VPetLCD* lcd) {
   drawPoop(lcd);
-  drawWakedUp(lcd);
+  // drawWakedUp(lcd);
+  if (digimonState == 0) {
+    drawWakedUp(lcd);
+  } else if (digimonState == 1) {
+     drawSleeping(lcd, true);
+  }
 }
 

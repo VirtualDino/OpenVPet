@@ -15,6 +15,7 @@ namespace V20{
       AbstractSpriteManager* spriteManager;
 
       uint8_t digimonSpritesIndex;
+      uint8_t digimonState;
       int8_t digimonX;
       int8_t digimonY;
       boolean looksLeft;
@@ -52,7 +53,7 @@ namespace V20{
       void drawSleeping(VPetLCD *lcd, boolean inBed);
 
     public:
-      DigimonWatchingScreen(AbstractSpriteManager* _spriteManager,uint8_t _digimonSpritesIndex, int8_t _minX, int8_t _maxX,int8_t _minY, int8_t _maxY);
+      DigimonWatchingScreen(AbstractSpriteManager* _spriteManager,uint8_t _digimonSpritesIndex, uint8_t _digimonState, int8_t _minX, int8_t _maxX,int8_t _minY, int8_t _maxY);
       void draw(VPetLCD *lcd);
       void loop(long delta); 
       void setXLimitations(int8_t _minX, int8_t _maxX){minX = _minX; maxX = _maxX;};

@@ -2,11 +2,11 @@
 #include <Arduino.h>
 
 #define N_EVOLUTIONS 1 //the maximal evolution options per digimon
-#define N_DIGIMON 4
+#define N_DIGIMON 3
 #define DIGIMON_AGUMON 0
 #define DIGIMON_KOROMON 1
 #define DIGIMON_BOTAMON 2
-#define DIGIMON_BETAMON 3
+// #define DIGIMON_BETAMON 3
 
 #define TYPE_VACCINE 0
 #define TYPE_DATA 1
@@ -89,10 +89,10 @@ struct NormalEvolutionData {
 
 
 const DigimonProperties DIGIMON_DATA[N_DIGIMON] PROGMEM = {
-    {"Agumon",STAGE_ROOKIE,20,2880,2880,20,2 ,20,22,POOP_FREQUENCY_ROOKIE,EVOLUTION_TIME_ROOKIE,TYPE_DATA,0x03,0},
-    {"Koromon",STAGE_BABY2,10,1800,1800,0 ,1 ,20,22,POOP_FREQUENCY_BABY2,EVOLUTION_TIME_BABY2,TYPE_DATA,0x03,1},
-    {"Botamon",STAGE_BABY1,5 ,180 ,180 ,0 ,1 ,20,22,POOP_FREQUENCY_BABY1,EVOLUTION_TIME_BABY1 ,TYPE_DATA,0x03,1},
-    {"Betamon",STAGE_ROOKIE,20,2880,2880,20,2 ,21,21,POOP_FREQUENCY_ROOKIE,EVOLUTION_TIME_ROOKIE,TYPE_DATA,0x03,0},
+    {"Agumon",STAGE_ROOKIE,20,2880,2880,20,2 ,20,20,POOP_FREQUENCY_ROOKIE,EVOLUTION_TIME_ROOKIE,TYPE_DATA,0x03,0},
+    {"Koromon",STAGE_BABY2,10,1800,1800,0 ,1 ,20,20,POOP_FREQUENCY_BABY2,EVOLUTION_TIME_BABY2,TYPE_DATA,0x03,1},
+    {"Botamon",STAGE_BABY1,5 ,180 ,180 ,0 ,1 ,20,20,POOP_FREQUENCY_BABY1,EVOLUTION_TIME_BABY1 ,TYPE_DATA,0x03,1},
+    // {"Betamon",STAGE_ROOKIE,20,2880,2880,20,2 ,21,21,POOP_FREQUENCY_ROOKIE,EVOLUTION_TIME_ROOKIE,TYPE_DATA,0x03,0},
 
 };
 
@@ -107,7 +107,7 @@ const NormalEvolutionData NORMALEVOLUTIONDATA[N_DIGIMON][N_EVOLUTIONS] PROGMEM =
     {{DIGIMON_KOROMON, false,0,0,false,0,0,false,0,0,false,0,0,false,0}},
 
     //Betamons Digitations
-    {NULL},
+    // {NULL},
 };
 
 
@@ -144,6 +144,8 @@ class Digimon{
         boolean hungerCallCheck; // Digimon calls twice when it needs help. This variable checks if it has called once already so a care mistake can be applied.
         boolean strengthCallCheck; // Same as above.
         boolean overfeedCheck; // Check if Digimon is currently overfed.
+        boolean canReturnToSleepCheck; // Digimon can go back to sleep after being disturbed.
+        uint8_t sleepDisturbanceCount; // Number of sleep disturbances occured
 
         uint8_t injuryCount;
         boolean isInjured;
@@ -163,6 +165,7 @@ class Digimon{
         unsigned long strengthMistakeTimer;
         unsigned long ageTimer;
         unsigned long evolutionTimer;
+        unsigned long returnToSleepTimer;
 
         void updateTimers(unsigned long delta);
 
@@ -189,6 +192,7 @@ class Digimon{
         void setStrengthMistakeTimer(unsigned long _strengthMistakeTimer){strengthMistakeTimer=_strengthMistakeTimer;};
         void setAgeTimer(unsigned long _ageTimer){ageTimer=_ageTimer;};
         void setEvolutionTimer(unsigned long _evolutionTimer){evolutionTimer=_evolutionTimer;};
+        void setReturnToSleepTimer(unsigned long _returnToSleepTimer){returnToSleepTimer=_returnToSleepTimer;};
 
         void setNumberOfPoops(uint8_t _numberOfPoops){numberOfPoops=_numberOfPoops;};
         void setHunger(uint8_t _hunger){hunger=_hunger;};
@@ -206,6 +210,8 @@ class Digimon{
         void setOverfeedCheck(boolean _overfeedCheck){overfeedCheck=_overfeedCheck;};
         void setIsInjured(boolean _isInjured){isInjured=_isInjured;};
         void setInjuryCount(uint8_t _injuryCount){injuryCount=_injuryCount;};
+        void setCanReturnToSleepCheck(boolean _canReturnToSleepCheck){canReturnToSleepCheck=_canReturnToSleepCheck;};
+        void setSleepDisturbanceCount(uint8_t _sleepDisturbanceCount){sleepDisturbanceCount=_sleepDisturbanceCount;};
 
         
         //getters
@@ -225,6 +231,7 @@ class Digimon{
         unsigned long getStrengthMistakeTimer(){return strengthMistakeTimer;};
         unsigned long getAgeTimer(){return ageTimer;};
         unsigned long getEvolutionTimer(){return evolutionTimer;};
+        unsigned long getReturnToSleepTimer(){return returnToSleepTimer;};
         uint8_t getNumberOfPoops(){return numberOfPoops;};
         uint8_t getHunger(){return hunger;};
         uint8_t getStrength(){return strength;};
@@ -237,6 +244,10 @@ class Digimon{
         uint8_t getOverdoseCount(){return overdoseCount;};
         uint8_t getOverdoseTracker(){return overdoseTracker;};
         boolean getOverfeedChecker(){return overfeedCheck;};
+        uint8_t getSleepHour(){return properties->sleepHour;};
+        boolean getCanReturnToSleepCheck(){return canReturnToSleepCheck;};
+        uint8_t getSleepDisturbanceCount(){return sleepDisturbanceCount;};
+
      
 
 
@@ -258,5 +269,6 @@ class Digimon{
 
         void addDigimonPower(int8_t dp){digimonPower+=dp;};
         void addInjury(int8_t inj){injuryCount+=inj;};
+        void addSleepDisturbance(int8_t d){sleepDisturbanceCount+=d;};
 
 };
