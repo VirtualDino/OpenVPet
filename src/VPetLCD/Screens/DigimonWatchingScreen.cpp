@@ -165,8 +165,8 @@ void V20::DigimonWatchingScreen::drawWakedUp(VPetLCD* lcd) {
  * Draws the digimon sleeping
  * */
 void V20::DigimonWatchingScreen::drawSleeping(VPetLCD* lcd, boolean inBed) {
-  const unsigned short* sprite = spriteManager->getDigimonSprite(digimonSpritesIndex, 11);
-  lcd->draw16BitArray(sprite, screenX + digimonX, screenY + digimonY, !looksLeft, pixelColor);
+  const unsigned short* sprite = spriteManager->getDigimonSprite(digimonSpritesIndex, SPRITE_DIGIMON_SLEEPING);
+  lcd->draw16BitArray(sprite, screenX + 12, screenY, false, pixelColor);
 }
 
 /**
@@ -174,7 +174,6 @@ void V20::DigimonWatchingScreen::drawSleeping(VPetLCD* lcd, boolean inBed) {
  * */
 void V20::DigimonWatchingScreen::draw(VPetLCD* lcd) {
   drawPoop(lcd);
-  // drawWakedUp(lcd);
   if (digimonState == 0) {
     drawWakedUp(lcd);
   } else if (digimonState == 1) {

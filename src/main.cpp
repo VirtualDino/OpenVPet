@@ -217,6 +217,7 @@ void stateMachineInit() {
     case 0:
       if (digimon.getState() == 1) {
         digimon.setState(0);
+        Serial.println("State is now 0");
         digimon.addSleepDisturbance(1);
       }
       if (digimon.getAppetite() < 14) {
@@ -467,25 +468,6 @@ void loop()
   digimonScreen.loop(lastDelta);
   clockScreen.loop(lastDelta);
   digiNameScreen.loop(lastDelta);
-
-  // Put Digimon to sleep at relevant time if not already asleep
-  if (hours == digimon.getSleepHour() && minutes == 00 && digimon.getState() == 0) {
-    digimon.setState(1);
-    Serial.println("State is now 1");
-  }
-
-  // Wake Digimon up at 8am if not already awake
-  if (hours == 8 && minutes == 00 && digimon.getState() == 1) {
-    digimon.setState(0);
-    Serial.println("State is now 0");
-  }
-
-  Serial.print("Current Hour: ");
-Serial.println(hours);
-  Serial.print("Current Minute: ");
-Serial.println(minutes);
-Serial.print("Current State: ");
-Serial.println(digimon.getState());
 
 
   //switch to next frame only when the screen is active
