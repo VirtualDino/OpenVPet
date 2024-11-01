@@ -16,6 +16,7 @@ void Digimon::printSerial(){
   Serial.println(getStrengthMistakeTimer());
   Serial.println(getAgeTimer());
   Serial.println(getEvolutionTimer());
+  Serial.println(getReturnToSleepTimer());
 }
 
 
@@ -120,6 +121,15 @@ void Digimon::updateTimers(unsigned long delta){
     if(evolutionTimer >= properties->evolutionTimeSec*1000){
         evolutionTimer =0;
         evolved = true;
+    }
+
+    if (canReturnToSleepCheck == true && getState() == 0) {
+        returnToSleepTimer += delta;
+        // Return to sleep 5 minutes after disturbance
+        if (returnToSleepTimer >= 300000){
+            setState(1);
+            setCanReturnToSleepCheck(false);
+        }
     }
 
 }
