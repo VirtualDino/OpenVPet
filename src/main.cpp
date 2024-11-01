@@ -71,11 +71,13 @@ ESP32DigimonDataLoader dataLoader;
 VPetLCD screen(&displayAdapter, &spriteManager, 40, 16);
 VPetLCDMenuBar32p menuBar(7,5,displayHeight);
 
-V20::DigimonWatchingScreen digimonScreen(&spriteManager, digimon.getDigimonIndex(), -8, 40, 0, 0);
+V20::DigimonWatchingScreen digimonScreen(&spriteManager, digimon.getDigimonIndex(), digimon.getState(), -8, 40, 0, 0);
 V20::DigimonNameScreen digiNameScreen(&spriteManager, dataLoader.getDigimonProperties(digiIndex)->digiName, digimon.getDigimonIndex(), 24);
 V20::AgeWeightScreen ageWeightScreen(5, 21);
-V20::HeartsScreen hungryScreen("Hungry", 2, 4);
-V20::HeartsScreen strengthScreen("Strength", 3, 4);
+// V20::HeartsScreen hungryScreen("Hungry", 2, 4);
+V20::HeartsScreen hungryScreen("Hungry", digimon.getHungerHeartsCount(), 4);
+// V20::HeartsScreen strengthScreen("Strength", 3, 4);
+V20::HeartsScreen strengthScreen("Strength", digimon.getStrengthHeartsCount(), 4);
 V20::HeartsScreen effortScreen("Effort", 4, 4);
 V20::ProgressBarScreen dpScreen("DP", 29, 40);
 V20::PercentageScreen sPercentageScreen("WIN", 'S', 100);
@@ -162,7 +164,9 @@ void stateMachineInit() {
     switch (menuBar.getSelection()) {
     case 0:
       digiNameScreen.setDigimonSpriteIndex(digimon.getDigimonIndex());
-      hungryScreen.setHearts(4-4*digimon.getHunger()/10);
+      // hungryScreen.setHearts(4-4*digimon.getHunger()/10);
+      hungryScreen.setHearts(digimon.getHungerHeartsCount());
+      strengthScreen.setHearts(digimon.getStrengthHeartsCount());
       
       if(maxdp >0){
         dpScreen.setFillPercentage((digimon.getDigimonPower()*100)/maxdp);
@@ -207,16 +211,80 @@ void stateMachineInit() {
     uint8_t selection = foodSelection.getSelection();
     switch (selection) {
     case 0:
+      if (digimon.getState() == 1) {
+        digimon.setState(0);
+        Serial.println("State is now 0");
+        digimon.addSleepDisturbance(1);
+      }
+      if (digimon.getAppetite() < 14) {
       digimon.addWeight(1);
-      digimon.reduceHunger(1);
+      // digimon.reduceHunger(1);
+      digimon.addAppetite(1);
+      Serial.println("Digimon eat");
+      digimon.setHungerCallCheck(false);
+
+      if (digimon.getAppetite() < 0) {
+        digimon.setHungerHeartsCount(0);
+      } else if (digimon.getAppetite() > 4) {
+        digimon.setHungerHeartsCount(4);
+      } else if (digimon.getAppetite() == 14) {
+        digimon.setOverfeedCheck(true);
+        digimon.addOverfeed(1);
+      } else {
+        digimon.setHungerHeartsCount(digimon.getAppetite());
+      }
+
+      if ((hours >= digimon.getProperties()->sleepHour) || (hours >= 0 && hours < 8)) {
+        digimon.setCanReturnToSleepCheck(true);
+      }
+
       eatingAnimationScreen.setSprites(SYMBOL_MEAT, SYMBOL_HALF_MEAT,SYMBOL_EMPTY_MEAT);
       eatingAnimationScreen.startAnimation();
       stateMachine.setCurrentScreen(eatingAnimationScreenId);
+      } else {
+        // Play refusal animation
+      }
       break;
     case 1:
+      if (digimon.getState() == 1) {
+        digimon.setState(0);
+        Serial.println("State is now 0");
+        digimon.addSleepDisturbance(1);
+      }
       digimon.addWeight(2);
-      digimon.addStrength(2);
-      digimon.addDigimonPower(2);
+      digimon.addStrength(1);
+      // digimon.addDigimonPower(2);
+      digimon.increaseOverdoseTracker(1);
+      digimon.setStrengthCallCheck(false);
+
+      // Increase heart count
+      if (digimon.getStrength() < 0) {
+        digimon.setStrengthHeartsCount(0);
+      } else if (digimon.getStrength() > 4) {
+        digimon.setStrengthHeartsCount(4);
+      } else {
+        digimon.setStrengthHeartsCount(digimon.getStrength());
+      }
+
+      // Increase DP for every 4 protein eaten
+      if (digimon.getOverdoseTracker() == 4) {
+        digimon.addDigimonPower(1);
+      }
+
+
+      // Increase overdose count for every 4 protein eated, for a maximum of 7
+      // Also resets OD tracker to zero.
+      if (digimon.getOverdoseTracker() == 4 && digimon.getOverdoseCount() < 7) {
+        digimon.increaseOverdoseCount(1);
+        digimon.setOverdoseTracker(0);
+      } else if (digimon.getOverdoseTracker() == 4 && digimon.getOverdoseCount() == 7) {
+        digimon.setOverdoseTracker(0);
+      }
+
+      if ((hours >= digimon.getProperties()->sleepHour) || (hours >= 0 && hours < 8)) {
+        digimon.setCanReturnToSleepCheck(true);
+      }
+
       eatingAnimationScreen.setSprites(SYMBOL_PILL, SYMBOL_HALF_PILL,SYMBOL_EMPTY);
       eatingAnimationScreen.startAnimation();
       stateMachine.setCurrentScreen(eatingAnimationScreenId);
