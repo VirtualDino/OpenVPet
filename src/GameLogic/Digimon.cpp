@@ -128,6 +128,7 @@ void Digimon::updateTimers(unsigned long delta){
         // Return to sleep 5 minutes after disturbance
         if (returnToSleepTimer >= 300000){
             setState(1);
+            setCanReturnToSleepCheck(false);
         }
     }
 

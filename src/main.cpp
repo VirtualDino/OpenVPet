@@ -46,13 +46,9 @@ Digimon digimon(digiIndex);
 Button2 btn1(BUTTON_1);
 Button2 btn2(BUTTON_2);
 
-// int hours = 23;
-// int minutes = 59;
-// int seconds = 0;
-
-int hours = 20;
-int minutes = 00;
-int seconds = 00;
+int hours = 23;
+int minutes = 59;
+int seconds = 0;
 
 boolean buttonPressed = false;
 
