@@ -144,7 +144,7 @@ class Digimon{
         boolean hungerCallCheck; // Digimon calls twice when it needs help. This variable checks if it has called once already so a care mistake can be applied.
         boolean strengthCallCheck; // Same as above.
         boolean overfeedCheck; // Check if Digimon is currently overfed.
-        boolean canReturnToSleepCheck; // Digimon can go back to sleep after being disturbed.
+        boolean canReturnToSleepCheck=false; // Digimon can go back to sleep after being disturbed.
         uint8_t sleepDisturbanceCount; // Number of sleep disturbances occured
 
         uint8_t injuryCount;

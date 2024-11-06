@@ -46,9 +46,10 @@ Digimon digimon(digiIndex);
 Button2 btn1(BUTTON_1);
 Button2 btn2(BUTTON_2);
 
-int hours = 23;
+// int hours = 23;
+int hours = 19;
 int minutes = 59;
-int seconds = 0;
+int seconds = 55;
 
 boolean buttonPressed = false;
 
@@ -118,6 +119,12 @@ uint8_t poop=0;
 void stateMachineInit() {
   const DigimonProperties *properties = dataLoader.getDigimonProperties(digimon.getDigimonIndex());
   digimon.setProperties(properties);
+
+  if (clockScreen.getHours() >= digimon.getProperties()->sleepHour || clockScreen.getHours() <= 8) {
+    digimon.setState(1);
+  } else {
+    digimon.setState(0);
+  }
 
 
   //return to food selection screen after showing eating animation
@@ -234,7 +241,9 @@ void stateMachineInit() {
         digimon.setHungerHeartsCount(digimon.getAppetite());
       }
 
-      if ((hours >= digimon.getProperties()->sleepHour) || (hours >= 0 && hours < 8)) {
+      digimon.setCanReturnToSleepCheck(true);
+
+      if ((clockScreen.getHours() >= digimon.getProperties()->sleepHour) || (clockScreen.getHours() >= 0 && clockScreen.getHours() < 8)) {
         digimon.setCanReturnToSleepCheck(true);
       }
 
@@ -281,7 +290,7 @@ void stateMachineInit() {
         digimon.setOverdoseTracker(0);
       }
 
-      if ((hours >= digimon.getProperties()->sleepHour) || (hours >= 0 && hours < 8)) {
+      if ((clockScreen.getHours() >= digimon.getProperties()->sleepHour) || (clockScreen.getHours() >= 0 && clockScreen.getHours() < 8)) {
         digimon.setCanReturnToSleepCheck(true);
       }
 
@@ -502,6 +511,16 @@ void loop()
 
   unsigned long t2 = millis();
   lastDelta = t2 - t1;
+
+
+Serial.println("Hours: ");
+Serial.println(clockScreen.getHours());
+  if ((clockScreen.getHours() >= digimon.getProperties()->sleepHour || clockScreen.getHours() <= 8) && digimon.getCanReturnToSleepCheck() == false) {
+    digimon.setState(1);
+  } else {
+    digimon.setState(0);
+  }
+
 }
 
 
