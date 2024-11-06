@@ -71,7 +71,7 @@ ESP32DigimonDataLoader dataLoader;
 VPetLCD screen(&displayAdapter, &spriteManager, 40, 16);
 VPetLCDMenuBar32p menuBar(7,5,displayHeight);
 
-V20::DigimonWatchingScreen digimonScreen(&spriteManager, digimon.getDigimonIndex(), digimon.getState(), -8, 40, 0, 0);
+V20::DigimonWatchingScreen digimonScreen(&spriteManager, digimon.getDigimonIndex(), digimon, -8, 40, 0, 0);
 V20::DigimonNameScreen digiNameScreen(&spriteManager, dataLoader.getDigimonProperties(digiIndex)->digiName, digimon.getDigimonIndex(), 24);
 V20::AgeWeightScreen ageWeightScreen(5, 21);
 // V20::HeartsScreen hungryScreen("Hungry", 2, 4);
@@ -294,11 +294,23 @@ void stateMachineInit() {
       eatingAnimationScreen.setSprites(SYMBOL_HEART, SYMBOL_HEARTEMPTY,SYMBOL_EMPTY);
       eatingAnimationScreen.startAnimation();
       stateMachine.setCurrentScreen(eatingAnimationScreenId);
+      // For testing. Set digimon to be awake.
+       Serial.println("State is now: ");
+      Serial.println(digimon.getState());
+      digimon.setState(0);
+      Serial.println("State is now: ");
+      Serial.println(digimon.getState());
       break;
     case 3:
       eatingAnimationScreen.setSprites(SYMBOL_POOP,SYMBOL_HALF_PILL,SYMBOL_EMPTY);
       eatingAnimationScreen.startAnimation();
       stateMachine.setCurrentScreen(eatingAnimationScreenId);
+      // For testing. Set digimon to be asleep.
+       Serial.println("State is now: ");
+        Serial.println(digimon.getState());
+        digimon.setState(1);
+       Serial.println("State is now: ");
+        Serial.println(digimon.getState());
       break;
 
     }
