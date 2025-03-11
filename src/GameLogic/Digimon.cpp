@@ -118,9 +118,34 @@ void Digimon::updateTimers(unsigned long delta){
     }
 
     evolutionTimer += delta;
-    if(evolutionTimer >= properties->evolutionTimeSec*1000){
-        evolutionTimer =0;
-        evolved = true;
+    if (evolutionTimer >= properties->evolutionTimeSec * 1000 && !evolved) {
+        evolutionTimer = 0;
+
+        // Check evolution conditions from NORMALEVOLUTIONDATA
+        for (int i = 0; i < N_EVOLUTIONS; i++) {
+            NormalEvolutionData evoData;
+            memcpy_P(&evoData, &NORMALEVOLUTIONDATA[digimonIndex][i], sizeof(NormalEvolutionData));
+
+            if (evoData.digimonIndex == 0) {
+                continue; // Skip if no evolution data
+            }
+
+            bool conditionsMet = true;
+
+            // Check conditions (example: care mistakes, training, etc.)
+            if (careMistakes > evoData.careMistakes) {
+                continue;
+            }
+            if (trainingCounter < evoData.trainingAmount) {
+                continue;
+            }
+            // Add other conditions as needed
+
+            // If all conditions are met, evolve
+            setDigimonIndex(evoData.digimonIndex);
+            evolved = true;
+            break; // Evolution done, exit loop
+        }
     }
 
     if (canReturnToSleepCheck == true && getState() == 0) {

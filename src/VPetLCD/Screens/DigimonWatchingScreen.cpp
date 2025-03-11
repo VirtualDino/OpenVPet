@@ -180,4 +180,3 @@ void V20::DigimonWatchingScreen::draw(VPetLCD* lcd) {
      drawSleeping(lcd, true);
   }
 }
-

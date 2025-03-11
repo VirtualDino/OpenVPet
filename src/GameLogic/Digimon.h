@@ -40,7 +40,8 @@
 #define POOP_FREQUENCY_PERFECT 60*120
 #define POOP_FREQUENCY_ULTIMATE 60*120
 
-#define EVOLUTION_TIME_BABY1 60*10 //Baby1->Baby2 takes 10 minutes
+// #define EVOLUTION_TIME_BABY1 60*10 //Baby1->Baby2 takes 10 minutes
+#define EVOLUTION_TIME_BABY1 10
 #define EVOLUTION_TIME_BABY2 60*60*6 // Baby2->rookie takes 6 hours
 #define EVOLUTION_TIME_ROOKIE 60*60*24 // Rookie->adult takes 24 hours
 #define EVOLUTION_TIME_ADULT 60*60*36 
@@ -66,7 +67,8 @@ struct DigimonProperties {
 
 
 struct NormalEvolutionData {
-    uint16_t indexOfDigimonAfterEvolution;
+    // uint16_t indexOfDigimonAfterEvolution;
+    uint16_t digimonIndex;
     boolean careMistakes;
     uint8_t mustHaveCareMistakes; //if the caremistakes are 3-5, 
     uint8_t optionalCareMistakes; //then musthave is 3 and optional is 2
@@ -85,6 +87,8 @@ struct NormalEvolutionData {
 
     boolean careBattledWith;
     uint16_t battledWithDigimonId;
+
+    uint16_t trainingAmount;
 };
 
 
@@ -101,10 +105,10 @@ const NormalEvolutionData NORMALEVOLUTIONDATA[N_DIGIMON][N_EVOLUTIONS] PROGMEM =
     {NULL},
 
     //Koromons Digitations
-    {{DIGIMON_AGUMON, true,0,2,false,0,0,false,0,0,false,0,0,false,0}},
+    {{DIGIMON_AGUMON, true,0,2,false,0,0,false,0,0,false,0,0,false,0,0}},
 
     //Botamons Digitations
-    {{DIGIMON_KOROMON, false,0,0,false,0,0,false,0,0,false,0,0,false,0}},
+    {{DIGIMON_KOROMON, false,0,0,false,0,0,false,0,0,false,0,0,false,0,0}},
 
     //Betamons Digitations
     // {NULL},
