@@ -294,11 +294,13 @@ void stateMachineInit() {
       eatingAnimationScreen.setSprites(SYMBOL_HEART, SYMBOL_HEARTEMPTY,SYMBOL_EMPTY);
       eatingAnimationScreen.startAnimation();
       stateMachine.setCurrentScreen(eatingAnimationScreenId);
+      digimon.setState(1);
       break;
     case 3:
       eatingAnimationScreen.setSprites(SYMBOL_POOP,SYMBOL_HALF_PILL,SYMBOL_EMPTY);
       eatingAnimationScreen.startAnimation();
       stateMachine.setCurrentScreen(eatingAnimationScreenId);
+      digimon.setState(0);
       break;
 
     }
@@ -459,6 +461,7 @@ void loop()
   digimon.loop(lastDelta);
   digimonScreen.setNumberOfPoop(digimon.getNumberOfPoops());
 
+  digimonScreen.setDigimonState(digimon.getState());
 
   //updating the screens which need the loop
   digimonScreen.loop(lastDelta);
