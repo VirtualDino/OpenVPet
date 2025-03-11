@@ -71,7 +71,7 @@ ESP32DigimonDataLoader dataLoader;
 VPetLCD screen(&displayAdapter, &spriteManager, 40, 16);
 VPetLCDMenuBar32p menuBar(7,5,displayHeight);
 
-V20::DigimonWatchingScreen digimonScreen(&spriteManager, digimon.getDigimonIndex(), digimon.getState(), -8, 40, 0, 0);
+V20::DigimonWatchingScreen digimonScreen(&spriteManager, digimon.getDigimonIndex(), digimon, -8, 40, 0, 0);
 V20::DigimonNameScreen digiNameScreen(&spriteManager, dataLoader.getDigimonProperties(digiIndex)->digiName, digimon.getDigimonIndex(), 24);
 V20::AgeWeightScreen ageWeightScreen(5, 21);
 // V20::HeartsScreen hungryScreen("Hungry", 2, 4);

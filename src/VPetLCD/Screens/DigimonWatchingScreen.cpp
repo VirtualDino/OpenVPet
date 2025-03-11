@@ -5,9 +5,10 @@
 /////////////////////////////////////////////////////////////////
 
 #include "DigimonWatchingScreen.h"
+#include "GameLogic/Digimon.h"
 #include <Arduino.h>
 
-V20::DigimonWatchingScreen::DigimonWatchingScreen(AbstractSpriteManager* _spriteManager, uint8_t _digimonSpritesIndex, uint8_t _digimonState, int8_t _minX, int8_t _maxX, int8_t _minY, int8_t _maxY) {
+V20::DigimonWatchingScreen::DigimonWatchingScreen(AbstractSpriteManager* _spriteManager, uint8_t _digimonSpritesIndex, Digimon& digimon, int8_t _minX, int8_t _maxX, int8_t _minY, int8_t _maxY) : digimon(digimon) {
   setXLimitations(_minX, _maxX); // -8 32
   setYLimitations(_minY, _maxY);
   digimonX = 8;
@@ -23,7 +24,6 @@ V20::DigimonWatchingScreen::DigimonWatchingScreen(AbstractSpriteManager* _sprite
   poopAnimationCounter = 0;
   updateIntervallTime = 500;
   digimonSpritesIndex=_digimonSpritesIndex;
-  digimonState=_digimonState;
 }
 
 
@@ -174,9 +174,9 @@ void V20::DigimonWatchingScreen::drawSleeping(VPetLCD* lcd, boolean inBed) {
  * */
 void V20::DigimonWatchingScreen::draw(VPetLCD* lcd) {
   drawPoop(lcd);
-  if (digimonState == 0) {
+  if (digimon.getState() == 0) {
     drawWakedUp(lcd);
-  } else if (digimonState == 1) {
+  } else if (digimon.getState() == 1) {
      drawSleeping(lcd, true);
   }
 }
