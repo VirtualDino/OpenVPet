@@ -61,6 +61,7 @@ namespace V20{
       void setNumberOfPoop(uint8_t _numberOfPoop){numberOfPoop=_numberOfPoop;};
       void flushPoop();
       void setDigimonState(uint8_t _digimonState){digimonState = _digimonState;};
+      void setDigimonSpritesIndex(uint16_t _digimonSpritesIndex){digimonSpritesIndex = _digimonSpritesIndex;};
     
   };
 

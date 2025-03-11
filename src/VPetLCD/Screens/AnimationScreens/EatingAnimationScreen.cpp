@@ -118,7 +118,5 @@ namespace V20 {
         foodHalfSpriteIndex = _foodHalfSpriteIndex;
         foodEmptySpriteIndex = _foodEmptySpriteIndex;
     }
-
-    
     
  }

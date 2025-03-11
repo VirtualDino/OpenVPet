@@ -31,6 +31,5 @@ namespace V20 {
     void draw(VPetLCD* lcd);
     void setDigimonSpriteIndex(uint16_t _digimonSpriteIndex) { digimonSpriteIndex = _digimonSpriteIndex; };
 
-
   };
 }

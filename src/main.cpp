@@ -459,9 +459,25 @@ void loop()
 
 
   digimon.loop(lastDelta);
-  digimonScreen.setNumberOfPoop(digimon.getNumberOfPoops());
 
+  if (digimon.isEvolved()) {
+    const DigimonProperties *newProperties = dataLoader.getDigimonProperties(digimon.getDigimonIndex());
+    digimon.setProperties(newProperties);
+
+    // Update screens after evolution
+    digimonScreen.setDigimonSpritesIndex(digimon.getDigimonIndex());
+    digiNameScreen.setDigimonSpriteIndex(digimon.getDigimonIndex());
+    // digiNameScreen.setDigimonName(newProperties->digiName);
+    // eatingAnimationScreen.setDigimonSpritesIndex(digimon.getDigimonIndex());
+
+    // Reset evolved flag if you want to allow further evolutions later
+    // digimon.setEvolved(false); // Uncomment if multiple evolutions are possible
+    
+    }
+
+  digimonScreen.setNumberOfPoop(digimon.getNumberOfPoops());
   digimonScreen.setDigimonState(digimon.getState());
+  digimonScreen.setDigimonSpritesIndex(digimon.getDigimonIndex());
 
   //updating the screens which need the loop
   digimonScreen.loop(lastDelta);
