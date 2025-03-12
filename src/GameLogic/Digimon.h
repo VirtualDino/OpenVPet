@@ -40,24 +40,22 @@
 #define POOP_FREQUENCY_PERFECT 60*120
 #define POOP_FREQUENCY_ULTIMATE 60*120
 
-// #define EVOLUTION_TIME_BABY1 60*10 //Baby1->Baby2 takes 10 minutes
-#define EVOLUTION_TIME_BABY1 10
+#define EVOLUTION_TIME_BABY1 60*10 //Baby1->Baby2 takes 10 minutes
 #define EVOLUTION_TIME_BABY2 60*60*6 // Baby2->rookie takes 6 hours
 #define EVOLUTION_TIME_ROOKIE 60*60*24 // Rookie->adult takes 24 hours
 #define EVOLUTION_TIME_ADULT 60*60*36 
 #define EVOLUTION_TIME_PERFECT 60*60*48
 
 struct DigimonProperties {
-    char* digiName; //Name of the Digimon
+    const char* digiName; //Name of the Digimon
     uint8_t stage; //baby rookie adult etc.
     uint16_t minWeight;
     uint16_t hungerIntervalSec; //the time it takes for hunger to decrease in seconds
     uint16_t strengthIntervalSec; //the time it takes for strength to decrease in seconds
     uint8_t maxDigimonPower;
     uint8_t healDoses; // Number of doses required when healing. Varies per digimon.
-    uint8_t sleepTime; // Time the digimon goes to sleep. Value from 1-24.
 
-    uint8_t sleepHour;//at what time the digimon begins sleeping (0-23)
+    uint8_t sleepHour; // time the digimon begins sleeping (0-23)
     unsigned long poopTimeSec; //the time it takes to poop in seconds
     unsigned long evolutionTimeSec; //time it takes to evolve in seconds
     uint8_t type; // Va Da Vi
@@ -93,16 +91,15 @@ struct NormalEvolutionData {
 
 
 const DigimonProperties DIGIMON_DATA[N_DIGIMON] PROGMEM = {
-    {"Agumon",STAGE_ROOKIE,20,2880,2880,20,2 ,20,20,POOP_FREQUENCY_ROOKIE,EVOLUTION_TIME_ROOKIE,TYPE_DATA,0x03,0},
-    {"Koromon",STAGE_BABY2,10,1800,1800,0 ,1 ,20,20,POOP_FREQUENCY_BABY2,EVOLUTION_TIME_BABY2,TYPE_DATA,0x03,1},
-    {"Botamon",STAGE_BABY1,5 ,180 ,180 ,0 ,1 ,20,20,POOP_FREQUENCY_BABY1,EVOLUTION_TIME_BABY1 ,TYPE_DATA,0x03,1},
-    {"Betamon",STAGE_ROOKIE,20,2880,2880,20,2 ,21,21,POOP_FREQUENCY_ROOKIE,EVOLUTION_TIME_ROOKIE,TYPE_DATA,0x03,0},
-
+    {"Agumon", STAGE_ROOKIE, 20, 2880, 2880, 20, 2, 20, POOP_FREQUENCY_ROOKIE, EVOLUTION_TIME_ROOKIE, TYPE_DATA, 0x03, 0},
+    {"Koromon", STAGE_BABY2, 10, 1800, 1800, 0, 1, 20, POOP_FREQUENCY_BABY2, EVOLUTION_TIME_BABY2, TYPE_DATA, 0x03, 1},
+    {"Botamon", STAGE_BABY1, 5, 180, 180, 0, 1, 20, POOP_FREQUENCY_BABY1, EVOLUTION_TIME_BABY1, TYPE_DATA, 0x03, 1},
+    {"Betamon", STAGE_ROOKIE, 20, 2880, 2880, 20, 2, 21, POOP_FREQUENCY_ROOKIE, EVOLUTION_TIME_ROOKIE, TYPE_DATA, 0x03, 0},
 };
 
 const NormalEvolutionData NORMALEVOLUTIONDATA[N_DIGIMON][N_EVOLUTIONS] PROGMEM = {
     //Agumons Digitations
-    {NULL},
+    {0},
 
     //Koromons Digitations
     {{DIGIMON_AGUMON, true,0,2,false,0,0,false,0,0,false,0,0,false,0,0}},
@@ -111,7 +108,7 @@ const NormalEvolutionData NORMALEVOLUTIONDATA[N_DIGIMON][N_EVOLUTIONS] PROGMEM =
     {{DIGIMON_KOROMON, false,0,0,false,0,0,false,0,0,false,0,0,false,0,0}},
 
     //Betamons Digitations
-    {NULL},
+    {0},
 };
 
 
