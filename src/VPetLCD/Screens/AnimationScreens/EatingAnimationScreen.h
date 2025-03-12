@@ -18,6 +18,9 @@ namespace V20 {
             uint8_t getFullSpriteIndex(){return foodFullSpriteIndex;};
             uint8_t getHalfSpriteIndex(){return foodHalfSpriteIndex;};
             uint8_t getEmptySpriteIndex(){return foodEmptySpriteIndex;};
+            void setDigimonSpriteIndex(uint16_t _digimonSpriteIndex) { 
+                AnimationScreen::setDigimonSpriteIndex(_digimonSpriteIndex); 
+            }
     }; 
 
 

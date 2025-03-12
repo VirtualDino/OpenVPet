@@ -43,6 +43,8 @@ namespace V20 {
     //starts the Animation
     void startAnimation(){currentFrame=0;};
     void abortAnimation(){currentFrame=-1;}
+
+    void setDigimonSpriteIndex(uint16_t _digimonSpriteIndex) { digimonSpriteIndex = _digimonSpriteIndex; }
   };
 
 

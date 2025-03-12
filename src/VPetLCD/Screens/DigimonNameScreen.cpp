@@ -6,16 +6,15 @@
 
 #include "DigimonNameScreen.h"
 
-V20::DigimonNameScreen::DigimonNameScreen(AbstractSpriteManager* _spriteManager,char _digimonName[], uint16_t _digimonSpriteIndex, uint16_t _scrollBoxWidth) {
-
-  int namelength = strlen(_digimonName);
-  char* buf = new char[namelength + 1];
-  strcpy(buf, _digimonName);
-  digimonName = buf;
-
+V20::DigimonNameScreen::DigimonNameScreen(AbstractSpriteManager* _spriteManager, const char _digimonName[], uint16_t _digimonSpriteIndex, uint16_t _scrollBoxWidth) {
+  //  int namelength = strlen(_digimonName);
+  // char* buf = new char[namelength + 1];
+  // strcpy(buf, _digimonName);
+  // digimonName = buf;
+  digimonName = _digimonName; // directly assign the const char*
   digimonSpriteIndex = _digimonSpriteIndex;
   scrollBoxWidth = _scrollBoxWidth;
-  spriteManager=_spriteManager;
+  spriteManager = _spriteManager;
   //initializing it with 20 because, if it's zero before displaying the first time
   //the text will be out of box at the first displaying
   textwidth = 20;
@@ -55,7 +54,7 @@ void V20::DigimonNameScreen::scrollText() {
 }
 
 
-void V20::DigimonNameScreen::drawScrollBoxOnLCD(VPetLCD* lcd, char text[], int16_t boxWidth, int16_t currentOffsetX, int16_t OnLcdX, int16_t OnLcdY, uint16_t color) {
+void V20::DigimonNameScreen::drawScrollBoxOnLCD(VPetLCD* lcd, const char text[], int16_t boxWidth, int16_t currentOffsetX, int16_t OnLcdX, int16_t OnLcdY, uint16_t color) {
 
   //  drawNegatedLetterOnLCD(char c, OnLcdX, OnLcdX+boxWidth,  OnLcdX, OnLcdY, color);
   calculateTextWidth(lcd);

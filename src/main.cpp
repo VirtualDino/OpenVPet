@@ -25,6 +25,8 @@
 #include "GameLogic/Digimon.h"
 
 
+#include "config.h"
+
 uint16_t digiIndex =DIGIMON_BOTAMON;
 Digimon digimon(digiIndex);
 
@@ -36,6 +38,10 @@ Digimon digimon(digiIndex);
 #include <TFT_eSPI.h>
 #include "Button2.h"
 #include <Arduino.h>
+#include <WiFi.h>
+#include <HTTPClient.h>
+#include <ArduinoJson.h>
+#include "time.h"
 
 
 #define ADC_EN 14 //ADC_EN is the ADC detection enable port
@@ -69,7 +75,7 @@ ESP32DigimonDataLoader dataLoader;
 
 //Creating all instances for the UI
 VPetLCD screen(&displayAdapter, &spriteManager, 40, 16);
-VPetLCDMenuBar32p menuBar(7,5,displayHeight);
+VPetLCDMenuBar32p menuBar(9, 5, displayHeight);
 
 V20::DigimonWatchingScreen digimonScreen(&spriteManager, digimon.getDigimonIndex(), digimon, -8, 40, 0, 0);
 V20::DigimonNameScreen digiNameScreen(&spriteManager, dataLoader.getDigimonProperties(digiIndex)->digiName, digimon.getDigimonIndex(), 24);
@@ -86,9 +92,11 @@ V20::SelectionScreen foodSelection(true);
 V20::SelectionScreen fightSelection(true);
 V20::ClockScreen clockScreen(true);
 V20::EatingAnimationScreen eatingAnimationScreen(&spriteManager, digimon.getDigimonIndex());
+V20::SelectionScreen testSelection(true);
+V20::SelectionScreen settingsSelection(true);
 
-//13 screens and 3 signals (one for each button)
-uint8_t numberOfScreens = 13;
+//15 screens and 3 signals (one for each button)
+uint8_t numberOfScreens = 15;
 uint8_t numberOfSignals = 3;
 
 uint8_t confirmSignal = 0;
@@ -112,8 +120,31 @@ uint8_t foodSelectionId = stateMachine.addScreen(&foodSelection);
 uint8_t fightSelectionId = stateMachine.addScreen(&fightSelection);
 uint8_t clockScreenId = stateMachine.addScreen(&clockScreen);
 uint8_t eatingAnimationScreenId = stateMachine.addScreen(&eatingAnimationScreen);
+uint8_t testSelectionId = stateMachine.addScreen(&testSelection);
+uint8_t settingsSelectionId = stateMachine.addScreen(&settingsSelection);
 
 uint8_t poop=0;
+
+uint8_t previousScreenId;
+
+void syncTimeWithFeedback();
+
+void initWiFiAndSyncTimezone() {
+  Serial.print("Connecting to WiFi...");
+  WiFi.begin(ssid, password);
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(500);
+    Serial.print(".");
+  }
+  Serial.println("Connected!");
+
+  // Explicitly set timezone to UTC
+  setenv("TZ", "UTC0", 1);
+  tzset();
+
+  configTime(0, 0, ntpServer); // Sync time in UTC explicitly
+  Serial.println("Time synchronized via NTP in UTC");
+}
 
 void stateMachineInit() {
   const DigimonProperties *properties = dataLoader.getDigimonProperties(digimon.getDigimonIndex());
@@ -123,8 +154,7 @@ void stateMachineInit() {
   //return to food selection screen after showing eating animation
   eatingAnimationScreen.setAnimationEndAction([]() {
     stateMachine.setCurrentScreen(foodSelectionId);
-
-    });
+  });
 
   // in order to be able to go back to the digimon watching screen
   // we will add a transition from every screen to the digimon watching screen
@@ -181,19 +211,24 @@ void stateMachineInit() {
       foodSelection.setSelection(0);
       stateMachine.setCurrentScreen(foodSelectionId);
       break;
+    case 2:
+      // Add your logic here if needed
+      break;
     case 3:
       fightSelection.setSelection(0);
       stateMachine.setCurrentScreen(fightSelectionId);
       break;
-
     case 4:
-      
       digimonScreen.flushPoop();
       digimon.setNumberOfPoops(0);
       break;
-
-    case 2:
-
+    case 7: // Testing menu
+      testSelection.setSelection(0);
+      stateMachine.setCurrentScreen(testSelectionId);
+      break;
+    case 8: // Settings menu 
+      settingsSelection.setSelection(0);
+      stateMachine.setCurrentScreen(settingsSelectionId);
       break;
     }
     });
@@ -210,50 +245,54 @@ void stateMachineInit() {
   stateMachine.addTransitionAction(foodSelectionId, confirmSignal, []() {
     uint8_t selection = foodSelection.getSelection();
     switch (selection) {
-    case 0:
+    case 0: // Meat
       if (digimon.getState() == 1) {
         digimon.setState(0);
         Serial.println("State is now 0");
         digimon.addSleepDisturbance(1);
       }
       if (digimon.getAppetite() < 14) {
-      digimon.addWeight(1);
-      // digimon.reduceHunger(1);
-      digimon.addAppetite(1);
-      Serial.println("Digimon eat");
-      digimon.setHungerCallCheck(false);
+        digimon.addWeight(1);
+        digimon.addAppetite(1);
+        digimon.setHungerCallCheck(false);
 
-      if (digimon.getAppetite() < 0) {
-        digimon.setHungerHeartsCount(0);
-      } else if (digimon.getAppetite() > 4) {
-        digimon.setHungerHeartsCount(4);
-      } else if (digimon.getAppetite() == 14) {
-        digimon.setOverfeedCheck(true);
-        digimon.addOverfeed(1);
-      } else {
-        digimon.setHungerHeartsCount(digimon.getAppetite());
-      }
+        if (digimon.getAppetite() < 0) {
+          digimon.setHungerHeartsCount(0);
+        } else if (digimon.getAppetite() > 4) {
+          digimon.setHungerHeartsCount(4);
+        } else if (digimon.getAppetite() == 14) {
+          digimon.setOverfeedCheck(true);
+          digimon.addOverfeed(1);
+        } else {
+          digimon.setHungerHeartsCount(digimon.getAppetite());
+        }
 
-      if ((hours >= digimon.getProperties()->sleepHour) || (hours >= 0 && hours < 8)) {
-        digimon.setCanReturnToSleepCheck(true);
-      }
+        if ((hours >= digimon.getProperties()->sleepHour) || (hours >= 0 && hours < 8)) {
+          digimon.setCanReturnToSleepCheck(true);
+        }
 
       eatingAnimationScreen.setSprites(SYMBOL_MEAT, SYMBOL_HALF_MEAT,SYMBOL_EMPTY_MEAT);
+
+      // Set animation end action to return to food selection
+      eatingAnimationScreen.setAnimationEndAction([]() {
+        stateMachine.setCurrentScreen(foodSelectionId);
+      });
+
+      previousScreenId = foodSelectionId;
       eatingAnimationScreen.startAnimation();
       stateMachine.setCurrentScreen(eatingAnimationScreenId);
       } else {
         // Play refusal animation
       }
       break;
-    case 1:
+
+    case 1: // Pill
       if (digimon.getState() == 1) {
         digimon.setState(0);
-        Serial.println("State is now 0");
         digimon.addSleepDisturbance(1);
       }
       digimon.addWeight(2);
       digimon.addStrength(1);
-      // digimon.addDigimonPower(2);
       digimon.increaseOverdoseTracker(1);
       digimon.setStrengthCallCheck(false);
 
@@ -285,24 +324,17 @@ void stateMachineInit() {
         digimon.setCanReturnToSleepCheck(true);
       }
 
-      eatingAnimationScreen.setSprites(SYMBOL_PILL, SYMBOL_HALF_PILL,SYMBOL_EMPTY);
-      eatingAnimationScreen.startAnimation();
-      stateMachine.setCurrentScreen(eatingAnimationScreenId);
-      break;
+      eatingAnimationScreen.setSprites(SYMBOL_PILL, SYMBOL_HALF_PILL, SYMBOL_EMPTY);
+      
+      // Set animation end action to return to food selection
+      eatingAnimationScreen.setAnimationEndAction([]() {
+        stateMachine.setCurrentScreen(foodSelectionId);
+      });
 
-    case 2:
-      eatingAnimationScreen.setSprites(SYMBOL_HEART, SYMBOL_HEARTEMPTY,SYMBOL_EMPTY);
+      previousScreenId = foodSelectionId;
       eatingAnimationScreen.startAnimation();
       stateMachine.setCurrentScreen(eatingAnimationScreenId);
-      digimon.setState(1);
       break;
-    case 3:
-      eatingAnimationScreen.setSprites(SYMBOL_POOP,SYMBOL_HALF_PILL,SYMBOL_EMPTY);
-      eatingAnimationScreen.startAnimation();
-      stateMachine.setCurrentScreen(eatingAnimationScreenId);
-      digimon.setState(0);
-      break;
-
     }
     });
 
@@ -320,10 +352,153 @@ void stateMachineInit() {
 
     });
 
+  // Adding functionality of buttons in testing screen:
+  stateMachine.addTransition(testSelectionId, testSelectionId, nextSignal);
+  stateMachine.addTransitionAction(testSelectionId, nextSignal, []() {
+    testSelection.nextSelection();
+  });
 
+  stateMachine.addTransition(testSelectionId, testSelectionId, confirmSignal);
+  stateMachine.addTransitionAction(testSelectionId, confirmSignal, []() {
+    uint8_t selection = testSelection.getSelection();
+    switch (selection) {
+      case 0: // Sleep
+        digimon.setState(1);
+        eatingAnimationScreen.setSprites(SYMBOL_HEARTEMPTY, SYMBOL_EMPTY, SYMBOL_EMPTY);
+        
+        // Set animation end action to return to testing menu
+        eatingAnimationScreen.setAnimationEndAction([]() {
+          stateMachine.setCurrentScreen(testSelectionId);
+        });
 
+        previousScreenId = testSelectionId;
+        eatingAnimationScreen.startAnimation();
+        stateMachine.setCurrentScreen(eatingAnimationScreenId);
+        break;
+
+      case 1: // Wake
+        digimon.setState(0);
+        eatingAnimationScreen.setSprites(SYMBOL_HEART, SYMBOL_EMPTY, SYMBOL_EMPTY);
+        
+        // Set animation end action to return to testing menu
+        eatingAnimationScreen.setAnimationEndAction([]() {
+          stateMachine.setCurrentScreen(testSelectionId);
+        });
+
+        previousScreenId = testSelectionId;
+        eatingAnimationScreen.startAnimation();
+        stateMachine.setCurrentScreen(eatingAnimationScreenId);
+        break;
+
+      case 2: // Evo (increase digimon index)
+        if (digimon.getDigimonIndex() < N_DIGIMON - 1) {
+          digimon.setDigimonIndex(digimon.getDigimonIndex() + 1);
+          const DigimonProperties *newProperties = dataLoader.getDigimonProperties(digimon.getDigimonIndex());
+          digimon.setProperties(newProperties);
+          digimonScreen.setDigimonSpritesIndex(digimon.getDigimonIndex());
+          digiNameScreen.setDigimonSpriteIndex(digimon.getDigimonIndex());
+          digiNameScreen.setDigimonName(newProperties->digiName);
+          eatingAnimationScreen.setDigimonSpriteIndex(digimon.getDigimonIndex());
+        }
+        eatingAnimationScreen.setSprites(SYMBOL_HEART, SYMBOL_EMPTY, SYMBOL_EMPTY);
+        
+        // Set animation end action to return to testing menu
+        eatingAnimationScreen.setAnimationEndAction([]() {
+          stateMachine.setCurrentScreen(testSelectionId);
+        });
+
+        previousScreenId = testSelectionId;
+        eatingAnimationScreen.startAnimation();
+        stateMachine.setCurrentScreen(eatingAnimationScreenId);
+        break;
+
+      case 3: // Devo (decrease digimon index)
+        if (digimon.getDigimonIndex() > 0) {
+          digimon.setDigimonIndex(digimon.getDigimonIndex() - 1);
+          const DigimonProperties *newProperties = dataLoader.getDigimonProperties(digimon.getDigimonIndex());
+          digimon.setProperties(newProperties);
+          digimonScreen.setDigimonSpritesIndex(digimon.getDigimonIndex());
+          digiNameScreen.setDigimonSpriteIndex(digimon.getDigimonIndex());
+          digiNameScreen.setDigimonName(newProperties->digiName);
+          eatingAnimationScreen.setDigimonSpriteIndex(digimon.getDigimonIndex());
+        }
+        eatingAnimationScreen.setSprites(SYMBOL_POOP, SYMBOL_EMPTY, SYMBOL_EMPTY);
+        
+        // Set animation end action to return to testing menu
+        eatingAnimationScreen.setAnimationEndAction([]() {
+          stateMachine.setCurrentScreen(testSelectionId);
+        });
+
+        previousScreenId = testSelectionId;
+        eatingAnimationScreen.startAnimation();
+        stateMachine.setCurrentScreen(eatingAnimationScreenId);
+        break;
+    }
+  });
+
+  // Go back to testing selection if confirm pressed again during animation
+  stateMachine.addTransition(eatingAnimationScreenId, testSelectionId, confirmSignal);
+  stateMachine.addTransitionAction(eatingAnimationScreenId, confirmSignal, [](){
+    eatingAnimationScreen.abortAnimation();
+  });
+
+  stateMachine.addTransition(eatingAnimationScreenId, eatingAnimationScreenId, confirmSignal);
+  stateMachine.addTransitionAction(eatingAnimationScreenId, confirmSignal, [](){
+    eatingAnimationScreen.abortAnimation();
+    stateMachine.setCurrentScreen(previousScreenId);
+  });
+
+  // New case for settings menu
+  stateMachine.addTransition(settingsSelectionId, settingsSelectionId, confirmSignal);
+  stateMachine.addTransitionAction(settingsSelectionId, confirmSignal, []() {
+    uint8_t selection = settingsSelection.getSelection();
+    switch (selection) {
+      case 0: // Time
+        syncTimeWithFeedback(); // Call the new function
+        break;
+    }
+  });
 }
 
+void syncTimeWithFeedback() {
+  // Display connecting message
+  tft.fillScreen(TFT_BLACK);
+  tft.setTextColor(TFT_WHITE, TFT_BLACK);
+  tft.setTextSize(2);
+  tft.setCursor(10, displayHeight / 2 - 20);
+  tft.print("Connecting WiFi...");
+
+  WiFi.begin(ssid, password);
+  int maxRetries = 20; // 10 seconds timeout
+  int retries = 0;
+
+  while (WiFi.status() != WL_CONNECTED && retries < maxRetries) {
+    delay(500);
+    if (btn2.isPressed()) {
+      Serial.println("WiFi connection skipped by user.");
+      break;
+    }
+    retries++;
+  }
+
+  if (WiFi.status() == WL_CONNECTED) {
+    tft.fillScreen(TFT_BLACK);
+    tft.setCursor(10, displayHeight / 2 - 20);
+    tft.print("Syncing time...");
+    setenv("TZ", "UTC0", 1);
+    tzset();
+    configTime(0, 0, ntpServer);
+    delay(2000); // Short delay to show message clearly
+  } else {
+    tft.fillScreen(TFT_BLACK);
+    tft.setCursor(10, displayHeight / 2 - 20);
+    tft.print("WiFi failed!");
+    delay(1500);
+  }
+
+  // Return to settings menu
+  stateMachine.setCurrentScreen(settingsSelectionId);
+}
 
 void button_init()
 {
@@ -352,6 +527,8 @@ void setupScreens()
   menuBar.setIconOnIndex(4,4);
   menuBar.setIconOnIndex(5,5);
   menuBar.setIconOnIndex(6,6);
+  menuBar.setIconOnIndex(7,7); // Testing menu
+  menuBar.setIconOnIndex(8, 8); // Settings menu (wrench icon)
 
 
   screen.setMenuBar(&menuBar);
@@ -378,8 +555,6 @@ void setupScreens()
   //adding the food selection options
   foodSelection.addOption("Meat", SYMBOL_MEAT);
   foodSelection.addOption("PILL", SYMBOL_PILL);
-  foodSelection.addOption("LOVE", SYMBOL_HEART);
-  foodSelection.addOption("SHIT", SYMBOL_POOP);
 
   //adding the battle options
   fightSelection.setShowIcons(false);
@@ -389,6 +564,15 @@ void setupScreens()
   clockScreen.setHours(hours);
   clockScreen.setMinutes(minutes);
   clockScreen.setSeconds(seconds);
+
+  // Adding the testing selection options
+  testSelection.addOption("SLP", SYMBOL_HEARTEMPTY);
+  testSelection.addOption("WAKE", SYMBOL_HEART);
+  testSelection.addOption("Evo", SYMBOL_HEART);
+  testSelection.addOption("Devo", SYMBOL_POOP);
+
+  // Adding the settings selection options
+  settingsSelection.addOption("Time", SYMBOL_HEART);
 }
 
 // =========================================================================
@@ -429,20 +613,30 @@ void setup(void)
 
  //savegame.loadDigimon(&digimon);
 
-  //Some tft initialization stuff
+  // TFT initialization
   tft.init();
   tft.setRotation(1);
   tft.fillScreen(0x86CE);
 
-//init functions
-Serial.println("button_init");
+  // Display loading messages
+  tft.setTextColor(TFT_WHITE, TFT_BLACK);
+  tft.setTextSize(2);
+  tft.setCursor(10, displayHeight / 2 - 40);
+  tft.print("Connecting WiFi...");
+  tft.setCursor(10, displayHeight / 2 - 20);
+  tft.print("Syncing time...");
+
+  // Initialize buttons and screens
+  Serial.println("button_init");
   button_init();
   Serial.println("setupScreens");
   setupScreens();
-  
+
   stateMachineInit();
   Serial.println("stateMachineInit");
 
+  // Connect WiFi and sync time
+  initWiFiAndSyncTimezone();
 }
 // =========================================================================
 
@@ -457,7 +651,6 @@ void loop()
   //tft.fillScreen(0x86CE);
   unsigned long t1 = millis();
 
-
   digimon.loop(lastDelta);
 
   if (digimon.isEvolved()) {
@@ -469,6 +662,8 @@ void loop()
     digiNameScreen.setDigimonSpriteIndex(digimon.getDigimonIndex());
     // digiNameScreen.setDigimonName(newProperties->digiName);
     // eatingAnimationScreen.setDigimonSpritesIndex(digimon.getDigimonIndex());
+    digiNameScreen.setDigimonName(newProperties->digiName);
+    eatingAnimationScreen.setDigimonSpriteIndex(digimon.getDigimonIndex());
 
     // Reset evolved flag if you want to allow further evolutions later
     // digimon.setEvolved(false); // Uncomment if multiple evolutions are possible
@@ -488,7 +683,39 @@ void loop()
   //switch to next frame only when the screen is active
   if (stateMachine.getCurrentScreen() == &eatingAnimationScreen)
     eatingAnimationScreen.loop(lastDelta);
-  
+
+  // Update clock every second
+  static unsigned long lastClockUpdate = 0;
+  static int lastCheckedHour = -1; // Track last hour checked to avoid repeated state changes
+
+  if (millis() - lastClockUpdate >= 1000) {
+    struct tm timeinfo;
+    if (getLocalTime(&timeinfo)) {
+      int adjustedHour = (timeinfo.tm_hour + timezoneOffsetHours) % 24;
+      clockScreen.setHours(adjustedHour);
+      clockScreen.setMinutes(timeinfo.tm_min);
+      clockScreen.setSeconds(timeinfo.tm_sec);
+
+      // Check if it's time to sleep
+      if (adjustedHour == digimon.getProperties()->sleepHour && timeinfo.tm_min == 0 && timeinfo.tm_sec == 0 && lastCheckedHour != adjustedHour) {
+        digimon.setState(1); // Set state to sleep
+        lastCheckedHour = adjustedHour;
+      }
+
+      // Check if it's time to wake up (8:00 am)
+      if (adjustedHour == 8 && timeinfo.tm_min == 0 && timeinfo.tm_sec == 0 && lastCheckedHour != adjustedHour) {
+        digimon.setState(0); // Set state to awake
+        lastCheckedHour = adjustedHour;
+      }
+
+      // Reset lastCheckedHour after the minute passes to allow next day's check
+      if (timeinfo.tm_min != 0 || timeinfo.tm_sec != 0) {
+        lastCheckedHour = -1;
+      }
+    }
+    lastClockUpdate = millis();
+  }
+
   screen.renderScreen(stateMachine.getCurrentScreen());
   
 
@@ -500,8 +727,7 @@ void loop()
     tft.setTextColor(TFT_BLACK);
     tft.fillRect(0, 0, 100, 20, 0xFFFF);
     tft.drawString(String((1000.0) / lastDelta) + " FPS", 0, 0);
-    tft.drawString( "Fragmentation: "+String(getFragmentation()) , 0, 10);
-  
+    tft.drawString("Fragmentation: " + String(getFragmentation()), 0, 10);
   }
 
   btn1.loop();

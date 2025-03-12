@@ -15,9 +15,7 @@ V20::ClockScreen::ClockScreen(boolean _showAMPM) {
 }
 
 void V20::ClockScreen::loop(unsigned long delta ){
-  if (isNextFrameTime(delta)){
-    incrementSeconds();
-  }
+  // Remove incrementSeconds(); entirely
 }
 
 void V20::ClockScreen::incrementSeconds() {
@@ -40,27 +38,25 @@ void V20::ClockScreen::incrementSeconds() {
 }
 
 void V20::ClockScreen::draw(VPetLCD* lcd) {
-  boolean isAM = hours < 12;
+  uint8_t displayHours = hours; // Use a temporary variable to avoid modifying internal hours
+  boolean isAM = displayHours < 12;
 
   if (showAMPM) {
-
-    if (hours >= 13) {
-      hours -= 12;
+    if (displayHours >= 13) {
+      displayHours -= 12;
     }
-    if (hours == 0) {
-      hours = 12;
+    if (displayHours == 0) {
+      displayHours = 12;
     }
 
     if (isAM) {
       lcd->drawSymbol(SYMBOL_AM, screenX, screenY + SPRITES_UPPERCASE_ALPHABET_HEIGHT + 2, false, pixelColor);
-    }    
-else {
+    } else {
       lcd->drawSymbol(SYMBOL_PM, screenX, screenY + SPRITES_UPPERCASE_ALPHABET_HEIGHT + 2, false, pixelColor);
     }
-
   }
 
-  lcd->drawZeroPaddedIntegerOnLCD(hours, screenX, screenY, pixelColor);
+  lcd->drawZeroPaddedIntegerOnLCD(displayHours, screenX, screenY, pixelColor);
   lcd->drawPixelOnLCD(screenX + 2 * (SPRITES_DIGITS_WIDTH + 1), screenY + 1, pixelColor);
   lcd->drawPixelOnLCD(screenX + 2 * (SPRITES_DIGITS_WIDTH + 1), screenY + 5, pixelColor);
   lcd->drawZeroPaddedIntegerOnLCD(minutes, screenX + 2 * (SPRITES_DIGITS_WIDTH + 1) + 2, screenY, pixelColor);

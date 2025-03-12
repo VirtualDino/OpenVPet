@@ -52,6 +52,8 @@ namespace V20{
       void drawWakedUp(VPetLCD *lcd);
       void drawSleeping(VPetLCD *lcd, boolean inBed);
 
+      uint8_t digimonState;
+
     public:
       DigimonWatchingScreen(AbstractSpriteManager* _spriteManager,uint8_t _digimonSpritesIndex, Digimon& digimon, int8_t _minX, int8_t _maxX,int8_t _minY, int8_t _maxY);
       void draw(VPetLCD *lcd);
