@@ -2,11 +2,12 @@
 #include <Arduino.h>
 
 #define N_EVOLUTIONS 1 //the maximal evolution options per digimon
-#define N_DIGIMON 4
+#define N_DIGIMON 5
 #define DIGIMON_AGUMON 0
 #define DIGIMON_KOROMON 1
 #define DIGIMON_BOTAMON 2
 #define DIGIMON_BETAMON 3
+#define DIGIMON_GREYMON 4
 
 #define TYPE_VACCINE 0
 #define TYPE_DATA 1
@@ -95,11 +96,12 @@ const DigimonProperties DIGIMON_DATA[N_DIGIMON] PROGMEM = {
     {"Koromon", STAGE_BABY2, 10, 1800, 1800, 0, 1, 20, POOP_FREQUENCY_BABY2, EVOLUTION_TIME_BABY2, TYPE_DATA, 0x03, 1},
     {"Botamon", STAGE_BABY1, 5, 180, 180, 0, 1, 20, POOP_FREQUENCY_BABY1, EVOLUTION_TIME_BABY1, TYPE_DATA, 0x03, 1},
     {"Betamon", STAGE_ROOKIE, 20, 2880, 2880, 20, 2, 21, POOP_FREQUENCY_ROOKIE, EVOLUTION_TIME_ROOKIE, TYPE_DATA, 0x03, 0},
+    {"Greymon", STAGE_ADULT, 30, 3540, 3540, 30, 1, 21,POOP_FREQUENCY_ADULT, EVOLUTION_TIME_ADULT, TYPE_VACCINE,0x03, 0}
 };
 
 const NormalEvolutionData NORMALEVOLUTIONDATA[N_DIGIMON][N_EVOLUTIONS] PROGMEM = {
     //Agumons Digitations
-    {0},
+    {{DIGIMON_GREYMON, true, 0, 3, false, 0, 0, false, 0, 0, false, 0, 0, false, 32}},
 
     //Koromons Digitations
     {{DIGIMON_AGUMON, true,0,2,false,0,0,false,0,0,false,0,0,false,0,0}},
@@ -108,6 +110,9 @@ const NormalEvolutionData NORMALEVOLUTIONDATA[N_DIGIMON][N_EVOLUTIONS] PROGMEM =
     {{DIGIMON_KOROMON, false,0,0,false,0,0,false,0,0,false,0,0,false,0,0}},
 
     //Betamons Digitations
+    {0},
+
+    //Greymons Digitations
     {0},
 };
 
