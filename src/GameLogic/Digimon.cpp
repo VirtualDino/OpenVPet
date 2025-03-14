@@ -132,19 +132,49 @@ void Digimon::updateTimers(unsigned long delta){
 
             bool conditionsMet = true;
 
-            // Check conditions (example: care mistakes, training, etc.)
-            if (careMistakes > evoData.careMistakes) {
-                continue;
+            // Check careMistakes
+            if (evoData.careMistakes) {
+                if (careMistakes < evoData.mustHaveCareMistakes || 
+                    (evoData.optionalCareMistakes > 0 && careMistakes > evoData.optionalCareMistakes)) {
+                    conditionsMet = false;
+                }
             }
+
+            // Check careBattles
+            if (evoData.careBattles) {
+                if (numberOfBattles < evoData.mustHaveBattles || 
+                    (evoData.optionalBattles > 0 && numberOfBattles > evoData.optionalBattles)) {
+                    conditionsMet = false;
+                }
+            }
+
+            // Check careOverFeed
+            if (evoData.careOverFeed) {
+                if (overfeedCount < evoData.mustHaveOverfeed || 
+                    (evoData.optionalOverfeed > 0 && overfeedCount > evoData.optionalOverfeed)) {
+                    conditionsMet = false;
+                }
+            }
+
+            // Check careEffort
+            if (evoData.careEfford) {
+                if (effort < evoData.mustHaveEfford || 
+                    (evoData.optionalEfford > 0 && effort > evoData.optionalEfford)) {
+                    conditionsMet = false;
+                }
+            }
+
+            // Check trainingAmount
             if (trainingCounter < evoData.trainingAmount) {
-                continue;
+                conditionsMet = false;
             }
-            // Add other conditions as needed
 
             // If all conditions are met, evolve
-            setDigimonIndex(evoData.digimonIndex);
-            evolved = true;
-            break; // Evolution done, exit loop
+            if (conditionsMet) {
+                setDigimonIndex(evoData.digimonIndex);
+                evolved = true;
+                break; // Evolution done, exit loop
+            }
         }
     }
 

@@ -166,8 +166,7 @@ class Digimon{
         //uint16_t tagTotalBattleRecord
         //uint16_t singleTotalBattleWins
         //uint16_t tagTotalBattleWins
-
-        
+        uint8_t numberOfBattles;
 
         //timers
         unsigned long poopTimer;
@@ -224,6 +223,7 @@ class Digimon{
         void setInjuryCount(uint8_t _injuryCount){injuryCount=_injuryCount;};
         void setCanReturnToSleepCheck(boolean _canReturnToSleepCheck){canReturnToSleepCheck=_canReturnToSleepCheck;};
         void setSleepDisturbanceCount(uint8_t _sleepDisturbanceCount){sleepDisturbanceCount=_sleepDisturbanceCount;};
+        void setEvolved(boolean _evolved){evolved=_evolved;};
 
         
         //getters

@@ -660,15 +660,13 @@ void loop()
     // Update screens after evolution
     digimonScreen.setDigimonSpritesIndex(digimon.getDigimonIndex());
     digiNameScreen.setDigimonSpriteIndex(digimon.getDigimonIndex());
-    // digiNameScreen.setDigimonName(newProperties->digiName);
-    // eatingAnimationScreen.setDigimonSpritesIndex(digimon.getDigimonIndex());
     digiNameScreen.setDigimonName(newProperties->digiName);
     eatingAnimationScreen.setDigimonSpriteIndex(digimon.getDigimonIndex());
 
-    // Reset evolved flag if you want to allow further evolutions later
-    // digimon.setEvolved(false); // Uncomment if multiple evolutions are possible
-    
-    }
+    // Reset evolved flag to allow further evolutions
+    digimon.setEvolved(false);
+    Serial.println("Evolved flag reset");
+  }
 
   digimonScreen.setNumberOfPoop(digimon.getNumberOfPoops());
   digimonScreen.setDigimonState(digimon.getState());
