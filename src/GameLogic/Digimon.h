@@ -2,13 +2,22 @@
 #include <Arduino.h>
 
 #define N_EVOLUTIONS 2 //the maximal evolution options per digimon
-#define N_DIGIMON 6
+#define N_DIGIMON 15
 #define DIGIMON_AGUMON 0
 #define DIGIMON_KOROMON 1
 #define DIGIMON_BOTAMON 2
 #define DIGIMON_BETAMON 3
 #define DIGIMON_GREYMON 4
 #define DIGIMON_DEVIMON 5
+#define DIGIMON_AIRDRAMON 6
+#define DIGIMON_NUMEMON 7
+#define DIGIMON_TYRANOMON 8
+#define DIGIMON_MERAMON 9
+#define DIGIMON_SEADRAMON 10
+#define DIGIMON_METALGREYMON 11
+#define DIGIMON_MONZAEMON 12
+#define DIGIMON_MAMEMON 13
+#define DIGIMON_BLITZGREYMON 14
 
 #define TYPE_VACCINE 0
 #define TYPE_DATA 1
@@ -99,6 +108,15 @@ const DigimonProperties DIGIMON_DATA[N_DIGIMON] PROGMEM = {
     {"Betamon", STAGE_ROOKIE, 20, 2880, 2880, 20, 2, 21, POOP_FREQUENCY_ROOKIE, EVOLUTION_TIME_ROOKIE, TYPE_DATA, 0x03, 0},
     {"Greymon", STAGE_ADULT, 30, 3540, 3540, 30, 1, 21,POOP_FREQUENCY_ADULT, EVOLUTION_TIME_ADULT, TYPE_VACCINE,0x03, 0},
     {"Devimon", STAGE_ADULT, 40, 2880, 2880, 30, 1, 23,POOP_FREQUENCY_ADULT, EVOLUTION_TIME_ADULT, TYPE_VIRUS, 0x03, 0},
+    {"Airdramon", STAGE_ADULT, 30, 2280, 2280, 30, 1, 23, POOP_FREQUENCY_ADULT,EVOLUTION_TIME_ADULT, TYPE_VACCINE, 0x03, 0},
+    {"Numemon", STAGE_ADULT, 10, 1680, 1680, 30, 3, 0, POOP_FREQUENCY_ADULT, EVOLUTION_TIME_ADULT, TYPE_VIRUS, 0x03, 0},
+    {"Tyranomon", STAGE_ADULT, 20, 3540, 3540, 30, 2, 22, POOP_FREQUENCY_ADULT, EVOLUTION_TIME_ADULT, TYPE_DATA, 0x03, 0},
+    {"Meramon", STAGE_ADULT, 30, 2880, 2880, 30, 2, 0, POOP_FREQUENCY_ADULT, EVOLUTION_TIME_ADULT, TYPE_DATA, 0x03, 0},
+    {"Seadramon", STAGE_ADULT, 20, 2280, 2280, 30, 2, 23, POOP_FREQUENCY_ADULT, EVOLUTION_TIME_ADULT, TYPE_DATA, 0x03, 0},
+    {"Metal Greymon", STAGE_PERFECT, 40, 3540, 3540, 40, 1, 20, POOP_FREQUENCY_PERFECT, EVOLUTION_TIME_PERFECT, TYPE_VIRUS, 0x03, 0},
+    {"Monzaemon", STAGE_PERFECT, 40, 2880, 2880, 40, 1, 21, POOP_FREQUENCY_PERFECT, EVOLUTION_TIME_PERFECT, TYPE_VACCINE, 0x03, 0},
+    {"Mamemon", STAGE_PERFECT, 5, 3540, 3540, 40, 1, 23, POOP_FREQUENCY_PERFECT, EVOLUTION_TIME_PERFECT, TYPE_DATA, 0x03, 0},
+    {"Blitz Greymon", STAGE_ULTIMATE, 50, 3540, 3540, 50, 1, 23, POOP_FREQUENCY_ULTIMATE, EVOLUTION_TIME_PERFECT, TYPE_VIRUS, 0x03, 0},
 };
 
 const NormalEvolutionData NORMALEVOLUTIONDATA[N_DIGIMON][N_EVOLUTIONS] PROGMEM = {
@@ -119,6 +137,33 @@ const NormalEvolutionData NORMALEVOLUTIONDATA[N_DIGIMON][N_EVOLUTIONS] PROGMEM =
     {0},
 
     //Devimons Digitations
+    {0},
+
+    //Airdramon Digitations
+    {0},
+
+    //Numeons Digitations
+    {0},
+
+    //Tyranomons Digitations
+    {0},
+
+    //Meramons Digitations
+    {0},
+
+    //Seadramons Digitations
+    {0},
+
+    //Metal Greymons Digitations
+    {0},
+
+    //Monzaemons Digitations
+    {0},
+
+    //Mamemons Digitations
+    {0},
+
+    //Blitz Greymons Digitations
     {0},
 };
 
