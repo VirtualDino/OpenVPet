@@ -35,7 +35,7 @@ void Digimon::updateTimers(unsigned long delta){
             numberOfPoops++;
             if (numberOfPoops == 4) {
                 setIsInjured(true);
-                addInjury(1);
+                setInjuryCount(properties->healDoses);
             }
             if (getWeight() > properties->minWeight) {
                 loseWeight(1);
@@ -132,6 +132,14 @@ void Digimon::updateTimers(unsigned long delta){
 
             bool conditionsMet = true;
 
+            // Check trainingAmount
+            if (evoData.trainingAmount) {
+                if (trainingCounter < evoData.mustHaveTraining || 
+                    (evoData.optionalTraining > 0 && trainingCounter > evoData.optionalTraining)) {
+                    conditionsMet = false;
+                }
+            }
+
             // Check careMistakes
             if (evoData.careMistakes) {
                 if (careMistakes < evoData.mustHaveCareMistakes || 
@@ -157,16 +165,19 @@ void Digimon::updateTimers(unsigned long delta){
             }
 
             // Check careEffort
-            if (evoData.careEfford) {
-                if (effort < evoData.mustHaveEfford || 
-                    (evoData.optionalEfford > 0 && effort > evoData.optionalEfford)) {
+            if (evoData.careEffort) {
+                if (effort < evoData.mustHaveEffort || 
+                    (evoData.optionalEffort > 0 && effort > evoData.optionalEffort)) {
                     conditionsMet = false;
                 }
             }
 
-            // Check trainingAmount
-            if (trainingCounter < evoData.trainingAmount) {
-                conditionsMet = false;
+            // Check careVictories
+            if (evoData.careVictories) {
+                if (victoryCount < evoData.mustHaveVictories || 
+                    (evoData.optionalVictories > 0 && victoryCount > evoData.optionalVictories)) {
+                    conditionsMet = false;
+                }
             }
 
             // If all conditions are met, evolve
