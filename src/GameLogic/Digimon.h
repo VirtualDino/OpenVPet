@@ -1,7 +1,7 @@
 #pragma once
 #include <Arduino.h>
 
-#define N_EVOLUTIONS 2 //the maximal evolution options per digimon
+#define N_EVOLUTIONS 6 //the maximal evolution options per digimon
 #define N_DIGIMON 17
 #define DIGIMON_AGUMON 0
 #define DIGIMON_KOROMON 1
@@ -92,14 +92,20 @@ struct NormalEvolutionData {
     uint8_t mustHaveOverfeed;
     uint8_t optionalOverfeed;
 
-    boolean careEfford;
-    uint8_t mustHaveEfford;
-    uint8_t optionalEfford;
+    boolean careEffort;
+    uint8_t mustHaveEffort;
+    uint8_t optionalEffort;
+
+    uint16_t trainingAmount;
+    uint16_t mustHaveTraining;
+    uint16_t optionalTraining;
+
+    uint16_t careVictories;
+    uint16_t mustHaveVictories;
+    uint16_t optionalVictories;
 
     boolean careBattledWith;
     uint16_t battledWithDigimonId;
-
-    uint16_t trainingAmount;
 };
 
 
@@ -125,47 +131,57 @@ const DigimonProperties DIGIMON_DATA[N_DIGIMON] PROGMEM = {
 
 const NormalEvolutionData NORMALEVOLUTIONDATA[N_DIGIMON][N_EVOLUTIONS] PROGMEM = {
     //Agumons Digitations
-    {{DIGIMON_GREYMON, true, 0, 3, false, 0, 0, false, 0, 0, false, 0, 0, false, 0, 32},
-    {DIGIMON_DEVIMON, true, 0, 3, false, 0, 0, false, 0, 0, false, 0, 0, false, 0, 0}},
+    {{DIGIMON_GREYMON, true, 0, 2, false, 0, 0, false, 0, 0, false, 0, 0, true, 16, 0,false,0,0, false, 0},
+    {DIGIMON_TYRANOMON, true, 0, 3, false, 0, 0, true, 3, 0, false, 0, 0, true, 5, 15,false,0,0, false, 0},
+    {DIGIMON_DEVIMON, true, 0, 2, false, 0, 0, false, 0, 0, false, 0, 0, true, 0, 15,false,0,0, false, 0},
+    {DIGIMON_MERAMON, true, 3, 0, false, 0, 0, true, 3, 0, false, 0, 0, true, 16, 0,false,0,0, false, 0},
+    {DIGIMON_NUMEMON, true, 3, 0, false, 0, 0, false, 0, 0, false, 0, 0, true, 0, 4,false,0,0, false, 0},
+    {DIGIMON_NUMEMON, true, 3, 0, false, 0, 0, true, 0, 2, false, 0, 0, true, 5, 0,false,0,0, false, 0}},
 
     //Koromons Digitations
-    {{DIGIMON_AGUMON, true,0,2,false,0,0,false,0,0,false,0,0,false,0,0}},
+    {{DIGIMON_AGUMON, true,0,2,false,0,0,false,0,0,false,0,0,false,0,0,false,0,0,false,0},
+    {DIGIMON_BETAMON, true,3,0,false,0,0,false,0,0,false,0,0,false,0,0,false,0,0,false,0}},
 
     //Botamons Digitations
-    {{DIGIMON_KOROMON, false,0,0,false,0,0,false,0,0,false,0,0,false,0,0}},
+    {{DIGIMON_KOROMON, false,0,0,false,0,0,false,0,0,false,0,0,false,0,0,false,0,0,false,0}},
 
     //Betamons Digitations
-    {{DIGIMON_DEVIMON, true, 0, 3, false, 0, 0, false, 0, 0, false, 0, 0, false, 0, 48}},
+    {{DIGIMON_DEVIMON, true,0,2,false,0,0,false,0,0,false,0,0,true,16,0,false,0,0, false, 0},
+    {DIGIMON_MERAMON, true,0,2,false,0,0,false,0,0,false,0,0,true,0,15,false,0,0, false, 0},
+    {DIGIMON_AIRDRAMON, true,3,0,false,0,0,true,0,2,false,0,0,true,8,15,false,0,0, false, 0},
+    {DIGIMON_SEADRAMON, true,3,0,false,0,0,true,3,0,false,0,0,true,8,15,false,0,0, false, 0},
+    {DIGIMON_NUMEMON, true,3,0,false,0,0,false,0,0,false,0,0,true,0,7,false,0,0, false, 0},
+    {DIGIMON_NUMEMON, true,3,0,false,0,0,false,0,0,false,0,0,true,16,0,false,0,0, false, 0}},
 
     //Greymons Digitations
-    {0},
+    {{DIGIMON_METALGREYMON,false,0,0,true,15,0,false,0,0,false,0,0,false,0,0,true,12,15, false, 0}},
 
     //Devimons Digitations
-    {0},
+    {{DIGIMON_METALGREYMON,false,0,0,true,15,0,false,0,0,false,0,0,false,0,0,true,12,15, false, 0}},
 
     //Airdramon Digitations
-    {0},
+    {{DIGIMON_METALGREYMON,false,0,0,true,15,0,false,0,0,false,0,0,false,0,0,true,12,15, false, 0}},
 
     //Numeons Digitations
-    {0},
+    {{DIGIMON_MONZAEMON,false,0,0,true,15,0,false,0,0,false,0,0,false,0,0,true,12,15, false, 0}},
 
     //Tyranomons Digitations
-    {0},
+    {{DIGIMON_MAMEMON,false,0,0,true,15,0,false,0,0,false,0,0,false,0,0,true,12,15, false, 0}},
 
     //Meramons Digitations
-    {0},
+    {{DIGIMON_MAMEMON,false,0,0,true,15,0,false,0,0,false,0,0,false,0,0,true,12,15, false, 0}},
 
     //Seadramons Digitations
-    {0},
+    {{DIGIMON_MAMEMON,false,0,0,true,15,0,false,0,0,false,0,0,false,0,0,true,12,15, false, 0}},
 
     //Metal Greymons Digitations
-    {0},
+    {{DIGIMON_BLITZGREYMON,true,0,2,false,0,0,false,0,0,false,0,0,false,0,0,false,0,0, false, 0}},
 
     //Monzaemons Digitations
     {0},
 
     //Mamemons Digitations
-    {0},
+    {{DIGIMON_BANCHOMAMEMON,true,0,2,false,0,0,false,0,0,false,0,0,false,0,0,false,0,0, false, 0}},
 
     //Blitz Greymons Digitations
     {0},
@@ -213,6 +229,7 @@ class Digimon{
         boolean overfeedCheck; // Check if Digimon is currently overfed.
         boolean canReturnToSleepCheck; // Digimon can go back to sleep after being disturbed.
         uint8_t sleepDisturbanceCount; // Number of sleep disturbances occured
+        uint16_t victoryCount=0;
 
         uint8_t injuryCount;
         boolean isInjured;
@@ -279,7 +296,7 @@ class Digimon{
         void setCanReturnToSleepCheck(boolean _canReturnToSleepCheck){canReturnToSleepCheck=_canReturnToSleepCheck;};
         void setSleepDisturbanceCount(uint8_t _sleepDisturbanceCount){sleepDisturbanceCount=_sleepDisturbanceCount;};
         void setEvolved(boolean _evolved){evolved=_evolved;};
-
+        void setVictoryCount(uint16_t _victoryCount){victoryCount=_victoryCount;};
         
         //getters
         
@@ -314,7 +331,7 @@ class Digimon{
         uint8_t getSleepHour(){return properties->sleepHour;};
         boolean getCanReturnToSleepCheck(){return canReturnToSleepCheck;};
         uint8_t getSleepDisturbanceCount(){return sleepDisturbanceCount;};
-
+        uint16_t getVictoryCount(){return victoryCount;};
      
 
 
@@ -331,11 +348,13 @@ class Digimon{
         void increaseOverdoseTracker(int8_t amount){overdoseTracker+=amount;};
         void addCareMistake(int8_t m){careMistakes+=m;};
         void addOverfeed(int8_t of){overfeedCount+=of;};
+        void addVictory(int8_t v){victoryCount+=v;};
         // void addStrength(int8_t s){strength+=s;};
         // void loseStrength(int8_t s){strength -=s;};
 
         void addDigimonPower(int8_t dp){digimonPower+=dp;};
         void addInjury(int8_t inj){injuryCount+=inj;};
+        void reduceInjury(int8_t inj){injuryCount-=inj;};
         void addSleepDisturbance(int8_t d){sleepDisturbanceCount+=d;};
 
 };
