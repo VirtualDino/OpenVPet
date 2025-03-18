@@ -2,7 +2,7 @@
 #include <Arduino.h>
 
 #define N_EVOLUTIONS 2 //the maximal evolution options per digimon
-#define N_DIGIMON 15
+#define N_DIGIMON 17
 #define DIGIMON_AGUMON 0
 #define DIGIMON_KOROMON 1
 #define DIGIMON_BOTAMON 2
@@ -18,6 +18,8 @@
 #define DIGIMON_MONZAEMON 12
 #define DIGIMON_MAMEMON 13
 #define DIGIMON_BLITZGREYMON 14
+#define DIGIMON_BANCHOMAMEMON 15
+#define DIGIMON_OMEGAMONALTERS 16
 
 #define TYPE_VACCINE 0
 #define TYPE_DATA 1
@@ -117,6 +119,8 @@ const DigimonProperties DIGIMON_DATA[N_DIGIMON] PROGMEM = {
     {"Monzaemon", STAGE_PERFECT, 40, 2880, 2880, 40, 1, 21, POOP_FREQUENCY_PERFECT, EVOLUTION_TIME_PERFECT, TYPE_VACCINE, 0x03, 0},
     {"Mamemon", STAGE_PERFECT, 5, 3540, 3540, 40, 1, 23, POOP_FREQUENCY_PERFECT, EVOLUTION_TIME_PERFECT, TYPE_DATA, 0x03, 0},
     {"Blitz Greymon", STAGE_ULTIMATE, 50, 3540, 3540, 50, 1, 23, POOP_FREQUENCY_ULTIMATE, EVOLUTION_TIME_PERFECT, TYPE_VIRUS, 0x03, 0},
+    {"Bancho Mamemon", STAGE_ULTIMATE, 5, 3540, 3540, 50, 1, 23, POOP_FREQUENCY_ULTIMATE, EVOLUTION_TIME_PERFECT, TYPE_DATA, 0x03, 0},
+    {"Omegamon Alter-S", STAGE_SUPER_ULTIMATE, 40, 3960, 3960, 50, 1, 23, POOP_FREQUENCY_ULTIMATE, EVOLUTION_TIME_PERFECT, TYPE_VIRUS, 0x03, 0},
 };
 
 const NormalEvolutionData NORMALEVOLUTIONDATA[N_DIGIMON][N_EVOLUTIONS] PROGMEM = {
@@ -164,6 +168,12 @@ const NormalEvolutionData NORMALEVOLUTIONDATA[N_DIGIMON][N_EVOLUTIONS] PROGMEM =
     {0},
 
     //Blitz Greymons Digitations
+    {0},
+
+    //Bancho Mamemons Digitations
+    {0},
+
+    //Omegamon Alter-S Digitations
     {0},
 };
 
