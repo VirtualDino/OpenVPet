@@ -77,7 +77,7 @@ ESP32DigimonDataLoader dataLoader;
 VPetLCD screen(&displayAdapter, &spriteManager, 40, 16);
 VPetLCDMenuBar32p menuBar(9, 5, displayHeight);
 
-V20::DigimonWatchingScreen digimonScreen(&spriteManager, digimon.getDigimonIndex(), digimon, -8, 40, 0, 0);
+V20::DigimonWatchingScreen digimonScreen(&spriteManager, digimon.getDigimonIndex(), digimon, 0, 35, 0, 0);
 V20::DigimonNameScreen digiNameScreen(&spriteManager, dataLoader.getDigimonProperties(digiIndex)->digiName, digimon.getDigimonIndex(), 24);
 V20::AgeWeightScreen ageWeightScreen(5, 21);
 // V20::HeartsScreen hungryScreen("Hungry", 2, 4);
@@ -127,7 +127,17 @@ uint8_t poop=0;
 
 uint8_t previousScreenId;
 
+unsigned long lastInteractionTime = 0; // Track the last time a button was pressed
+bool screenOn = true; // Track the screen state
+
+int brightnessLevel = 3; // Start at a default brightness level
+const int maxBrightnessLevel = 5;
+
+// Forward declaration of the turnOnScreen function
+void turnOnScreen();
+
 void syncTimeWithFeedback();
+void toggleBrightness();
 
 void initWiFiAndSyncTimezone() {
   Serial.print("Connecting to WiFi...");
@@ -450,13 +460,9 @@ void stateMachineInit() {
 
   // New case for settings menu
   stateMachine.addTransition(settingsSelectionId, settingsSelectionId, confirmSignal);
-  stateMachine.addTransitionAction(settingsSelectionId, confirmSignal, []() {
-    uint8_t selection = settingsSelection.getSelection();
-    switch (selection) {
-      case 0: // Time
-        syncTimeWithFeedback(); // Call the new function
-        break;
-    }
+  stateMachine.addTransition(settingsSelectionId, settingsSelectionId, nextSignal);
+  stateMachine.addTransitionAction(settingsSelectionId, nextSignal, []() {
+    settingsSelection.nextSelection();
   });
 }
 
@@ -503,19 +509,57 @@ void syncTimeWithFeedback() {
 void button_init()
 {
   btn1.setLongClickHandler([](Button2& b) {
-    stateMachine.sendSignal(backSignal);
-    buttonPressed = true;
-    });
+    if (!screenOn) {
+      tft.writecommand(TFT_DISPON); // Turn the screen back on
+      tft.fillScreen(0x86CE); // Refresh the screen content
+      analogWrite(4, map(brightnessLevel, 2, maxBrightnessLevel, 51, 255)); // Restore user brightness
+      screenOn = true;
+      lastInteractionTime = millis(); // Reset the inactivity timer
+    } else {
+      stateMachine.sendSignal(backSignal);
+      buttonPressed = true;
+      lastInteractionTime = millis(); // Reset the inactivity timer
+    }
+  });
 
   btn1.setPressedHandler([](Button2& b) {
-    stateMachine.sendSignal(nextSignal);
-    buttonPressed = true;
-    });
+    if (!screenOn) {
+      tft.writecommand(TFT_DISPON); // Turn the screen back on
+      tft.fillScreen(0x86CE); // Refresh the screen content
+      analogWrite(4, map(brightnessLevel, 2, maxBrightnessLevel, 51, 255)); // Restore user brightness
+      screenOn = true;
+      lastInteractionTime = millis(); // Reset the inactivity timer
+    } else {
+      stateMachine.sendSignal(nextSignal);
+      buttonPressed = true;
+      lastInteractionTime = millis(); // Reset the inactivity timer
+    }
+  });
 
   btn2.setPressedHandler([](Button2& b) {
-    stateMachine.sendSignal(confirmSignal);
-    buttonPressed = true;
-    });
+    if (!screenOn) {
+      tft.writecommand(TFT_DISPON); // Turn the screen back on
+      tft.fillScreen(0x86CE); // Refresh the screen content
+      analogWrite(4, map(brightnessLevel, 2, maxBrightnessLevel, 51, 255)); // Restore user brightness
+      screenOn = true;
+      lastInteractionTime = millis(); // Reset the inactivity timer
+    } else {
+      stateMachine.sendSignal(confirmSignal);
+      buttonPressed = true;
+      lastInteractionTime = millis(); // Reset the inactivity timer
+    }
+  });
+}
+
+void toggleBrightness() {
+  brightnessLevel++;
+  if (brightnessLevel > maxBrightnessLevel) {
+    brightnessLevel = 2; // Start from 2 to avoid turning off the screen
+  }
+
+  // Adjust the actual brightness of the backlight here
+  // For example, using PWM to control brightness
+  analogWrite(4, map(brightnessLevel, 2, maxBrightnessLevel, 51, 255)); // Map from 51 to avoid turning off
 }
 
 void setupScreens()
@@ -573,6 +617,19 @@ void setupScreens()
 
   // Adding the settings selection options
   settingsSelection.addOption("Time", SYMBOL_HEART);
+  settingsSelection.addOption("BRIGHT", SYMBOL_HEART);
+
+  stateMachine.addTransitionAction(settingsSelectionId, confirmSignal, []() {
+    uint8_t selection = settingsSelection.getSelection();
+    switch (selection) {
+      case 0: // Time
+        syncTimeWithFeedback();
+        break;
+      case 1: // Brightness
+        toggleBrightness();
+        break;
+    }
+  });
 }
 
 // =========================================================================
@@ -616,7 +673,7 @@ void setup(void)
   // TFT initialization
   tft.init();
   tft.setRotation(1);
-  tft.fillScreen(0x86CE);
+  tft.fillScreen(0x86CE); // Ensure the screen is filled with a color at startup
 
   // Display loading messages
   tft.setTextColor(TFT_WHITE, TFT_BLACK);
@@ -637,6 +694,11 @@ void setup(void)
 
   // Connect WiFi and sync time
   initWiFiAndSyncTimezone();
+
+  pinMode(4, OUTPUT);
+  digitalWrite(4, HIGH); // Turn on the backlight initially
+
+  digimon.setTurnOnScreenCallback(turnOnScreen);
 }
 // =========================================================================
 
@@ -648,9 +710,22 @@ boolean debug=false;
 
 void loop()
 {
-  //tft.fillScreen(0x86CE);
-  unsigned long t1 = millis();
+  unsigned long currentTime = millis();
 
+  // Check if 30 seconds have passed since the last interaction
+  if (screenOn && (currentTime - lastInteractionTime >= 30000)) {
+    stateMachine.setCurrentScreen(digimonScreenId); // Set to Digimon Watching Screen
+    tft.writecommand(TFT_DISPOFF); // Turn off the display
+    analogWrite(4, 0); // Set brightness to lowest setting for sleep mode
+    screenOn = false;
+  }
+
+  // Always run button loops to detect button presses
+  btn1.loop();
+  btn2.loop();
+
+  // Always run digimon logic to update timers and states
+  unsigned long t1 = millis();
   digimon.loop(lastDelta);
 
   if (digimon.isEvolved()) {
@@ -668,17 +743,17 @@ void loop()
     Serial.println("Evolved flag reset");
   }
 
+  // Update the screen's internal state regardless of whether the display is on
   digimonScreen.setNumberOfPoop(digimon.getNumberOfPoops());
   digimonScreen.setDigimonState(digimon.getState());
   digimonScreen.setDigimonSpritesIndex(digimon.getDigimonIndex());
 
-  //updating the screens which need the loop
+  // Updating the screens which need the loop
   digimonScreen.loop(lastDelta);
   clockScreen.loop(lastDelta);
   digiNameScreen.loop(lastDelta);
 
-
-  //switch to next frame only when the screen is active
+  // Switch to next frame only when the screen is active
   if (stateMachine.getCurrentScreen() == &eatingAnimationScreen)
     eatingAnimationScreen.loop(lastDelta);
 
@@ -714,22 +789,21 @@ void loop()
     lastClockUpdate = millis();
   }
 
-  screen.renderScreen(stateMachine.getCurrentScreen());
-  
+  // Only render the screen if it's on
+  if (screenOn) {
+    digitalWrite(4, HIGH); // Ensure the backlight is on
+    screen.renderScreen(stateMachine.getCurrentScreen());
+  }
 
   buttonPressed = false;
 
-  if (debug == true)
-  {
-    //here should be debug stuff but its only fps lol
+  if (debug == true) {
+    // Here should be debug stuff but it's only fps lol
     tft.setTextColor(TFT_BLACK);
     tft.fillRect(0, 0, 100, 20, 0xFFFF);
     tft.drawString(String((1000.0) / lastDelta) + " FPS", 0, 0);
     tft.drawString("Fragmentation: " + String(getFragmentation()), 0, 10);
   }
-
-  btn1.loop();
-  btn2.loop();
 
   unsigned long t2 = millis();
   lastDelta = t2 - t1;
@@ -742,4 +816,13 @@ void loop()
 float getFragmentation() {
   
   return 100 - heap_caps_get_largest_free_block(MALLOC_CAP_8BIT) * 100.0 / heap_caps_get_free_size(MALLOC_CAP_8BIT);
+}
+
+void turnOnScreen() {
+  if (!screenOn) {
+    tft.writecommand(TFT_DISPON); // Turn the screen back on
+    analogWrite(4, map(brightnessLevel, 2, maxBrightnessLevel, 51, 255)); // Restore user brightness
+    screenOn = true;
+    lastInteractionTime = millis(); // Reset the inactivity timer
+  }
 }

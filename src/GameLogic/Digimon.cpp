@@ -32,6 +32,7 @@ void Digimon::updateTimers(unsigned long delta){
         poopTimer += delta;
         if(poopTimer > properties->poopTimeSec*1000){
             poopTimer %= properties->poopTimeSec*1000;
+            turnOnScreenCallback(); // Turn on the screen
             numberOfPoops++;
             if (numberOfPoops == 4) {
                 setIsInjured(true);
@@ -64,6 +65,7 @@ void Digimon::updateTimers(unsigned long delta){
     }
 
     if (appetite == 0 && hungerCallCheck == false) {
+        turnOnScreenCallback(); // Turn on the screen
         // Trigger call sound
         // ...
         hungerMistakeTimer += delta;
@@ -71,6 +73,7 @@ void Digimon::updateTimers(unsigned long delta){
             setHungerCallCheck(true);
         }
     } else if (appetite == 0 && hungerCallCheck == true) {
+        // turnOnScreenCallback(); // Turn on the screen
         // Trigger call sound
         // ...
         hungerMistakeTimer += delta;
@@ -95,6 +98,7 @@ void Digimon::updateTimers(unsigned long delta){
     }
 
     if (strength == 0 && strengthCallCheck == false) {
+        turnOnScreenCallback(); // Turn on the screen
         // Trigger call sound
         // ...
         strengthMistakeTimer += delta;
@@ -102,6 +106,7 @@ void Digimon::updateTimers(unsigned long delta){
             setStrengthCallCheck(true);
         }
     } else if (strength == 0 && strengthCallCheck == true) {
+        // turnOnScreenCallback(); // Turn on the screen
         // Trigger call sound
         // ...
         strengthMistakeTimer += delta;
@@ -119,6 +124,7 @@ void Digimon::updateTimers(unsigned long delta){
 
     evolutionTimer += delta;
     if (evolutionTimer >= properties->evolutionTimeSec * 1000 && !evolved) {
+        turnOnScreenCallback(); // Turn on the screen
         evolutionTimer = 0;
 
         // Check evolution conditions from NORMALEVOLUTIONDATA
@@ -193,6 +199,7 @@ void Digimon::updateTimers(unsigned long delta){
         returnToSleepTimer += delta;
         // Return to sleep 5 minutes after disturbance
         if (returnToSleepTimer >= 300000){
+            if (turnOnScreenCallback) turnOnScreenCallback(); // Turn on the screen
             setState(1);
             setCanReturnToSleepCheck(false);
         }

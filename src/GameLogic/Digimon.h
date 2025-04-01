@@ -1,5 +1,6 @@
 #pragma once
 #include <Arduino.h>
+#include <functional>
 
 #define N_EVOLUTIONS 6 //the maximal evolution options per digimon
 #define N_DIGIMON 17
@@ -250,6 +251,8 @@ class Digimon{
         unsigned long evolutionTimer;
         unsigned long returnToSleepTimer;
 
+        std::function<void()> turnOnScreenCallback;
+
         void updateTimers(unsigned long delta);
 
 
@@ -297,6 +300,10 @@ class Digimon{
         void setSleepDisturbanceCount(uint8_t _sleepDisturbanceCount){sleepDisturbanceCount=_sleepDisturbanceCount;};
         void setEvolved(boolean _evolved){evolved=_evolved;};
         void setVictoryCount(uint16_t _victoryCount){victoryCount=_victoryCount;};
+        
+        void setTurnOnScreenCallback(std::function<void()> callback) {
+            turnOnScreenCallback = callback;
+        }
         
         //getters
         
