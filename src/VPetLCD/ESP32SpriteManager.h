@@ -14,6 +14,8 @@ public:
     const uint8_t getSmallCapitalLetterWidth(char c);
     const byte* getSymbol(uint16_t symbolIndex);
     const uint32_t* getHighResMenuItem(uint16_t menuItemIndex);
-
+    const uint32_t* getTrainingMeter(uint16_t symbolIndex);
+    const uint16_t* getLargeIcon(uint16_t iconIndex);
+    const uint32_t* getLargeElement(uint16_t elementIndex);
 
 };

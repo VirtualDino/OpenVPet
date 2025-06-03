@@ -1,6 +1,7 @@
 #pragma once
 #include <Arduino.h>
 #include <functional>
+#include "../VPetLCD/ImageData/SymbolData.h"
 
 #define N_EVOLUTIONS 6 //the maximal evolution options per digimon
 #define N_DIGIMON 17
@@ -63,6 +64,7 @@
 struct DigimonProperties {
     const char* digiName; //Name of the Digimon
     uint8_t stage; //baby rookie adult etc.
+    uint8_t attackIcon; // Icon used for attacking
     uint16_t minWeight;
     uint16_t hungerIntervalSec; //the time it takes for hunger to decrease in seconds
     uint16_t strengthIntervalSec; //the time it takes for strength to decrease in seconds
@@ -111,23 +113,23 @@ struct NormalEvolutionData {
 
 
 const DigimonProperties DIGIMON_DATA[N_DIGIMON] PROGMEM = {
-    {"Agumon", STAGE_ROOKIE, 20, 2880, 2880, 20, 2, 20, POOP_FREQUENCY_ROOKIE, EVOLUTION_TIME_ROOKIE, TYPE_DATA, 0x03, 0},
-    {"Koromon", STAGE_BABY2, 10, 1800, 1800, 0, 1, 20, POOP_FREQUENCY_BABY2, EVOLUTION_TIME_BABY2, TYPE_DATA, 0x03, 1},
-    {"Botamon", STAGE_BABY1, 5, 180, 180, 0, 1, 20, POOP_FREQUENCY_BABY1, EVOLUTION_TIME_BABY1, TYPE_DATA, 0x03, 1},
-    {"Betamon", STAGE_ROOKIE, 20, 2880, 2880, 20, 2, 21, POOP_FREQUENCY_ROOKIE, EVOLUTION_TIME_ROOKIE, TYPE_DATA, 0x03, 0},
-    {"Greymon", STAGE_ADULT, 30, 3540, 3540, 30, 1, 21,POOP_FREQUENCY_ADULT, EVOLUTION_TIME_ADULT, TYPE_VACCINE,0x03, 0},
-    {"Devimon", STAGE_ADULT, 40, 2880, 2880, 30, 1, 23,POOP_FREQUENCY_ADULT, EVOLUTION_TIME_ADULT, TYPE_VIRUS, 0x03, 0},
-    {"Airdramon", STAGE_ADULT, 30, 2280, 2280, 30, 1, 23, POOP_FREQUENCY_ADULT,EVOLUTION_TIME_ADULT, TYPE_VACCINE, 0x03, 0},
-    {"Numemon", STAGE_ADULT, 10, 1680, 1680, 30, 3, 0, POOP_FREQUENCY_ADULT, EVOLUTION_TIME_ADULT, TYPE_VIRUS, 0x03, 0},
-    {"Tyranomon", STAGE_ADULT, 20, 3540, 3540, 30, 2, 22, POOP_FREQUENCY_ADULT, EVOLUTION_TIME_ADULT, TYPE_DATA, 0x03, 0},
-    {"Meramon", STAGE_ADULT, 30, 2880, 2880, 30, 2, 0, POOP_FREQUENCY_ADULT, EVOLUTION_TIME_ADULT, TYPE_DATA, 0x03, 0},
-    {"Seadramon", STAGE_ADULT, 20, 2280, 2280, 30, 2, 23, POOP_FREQUENCY_ADULT, EVOLUTION_TIME_ADULT, TYPE_DATA, 0x03, 0},
-    {"Metal Greymon", STAGE_PERFECT, 40, 3540, 3540, 40, 1, 20, POOP_FREQUENCY_PERFECT, EVOLUTION_TIME_PERFECT, TYPE_VIRUS, 0x03, 0},
-    {"Monzaemon", STAGE_PERFECT, 40, 2880, 2880, 40, 1, 21, POOP_FREQUENCY_PERFECT, EVOLUTION_TIME_PERFECT, TYPE_VACCINE, 0x03, 0},
-    {"Mamemon", STAGE_PERFECT, 5, 3540, 3540, 40, 1, 23, POOP_FREQUENCY_PERFECT, EVOLUTION_TIME_PERFECT, TYPE_DATA, 0x03, 0},
-    {"Blitz Greymon", STAGE_ULTIMATE, 50, 3540, 3540, 50, 1, 23, POOP_FREQUENCY_ULTIMATE, EVOLUTION_TIME_PERFECT, TYPE_VIRUS, 0x03, 0},
-    {"Bancho Mamemon", STAGE_ULTIMATE, 5, 3540, 3540, 50, 1, 23, POOP_FREQUENCY_ULTIMATE, EVOLUTION_TIME_PERFECT, TYPE_DATA, 0x03, 0},
-    {"Omegamon Alter-S", STAGE_SUPER_ULTIMATE, 40, 3960, 3960, 50, 1, 23, POOP_FREQUENCY_ULTIMATE, EVOLUTION_TIME_PERFECT, TYPE_VIRUS, 0x03, 0},
+    {"Agumon", STAGE_ROOKIE, SYMBOL_ATTACK_RAY, 20, 2880, 2880, 20, 2, 20, POOP_FREQUENCY_ROOKIE, EVOLUTION_TIME_ROOKIE, TYPE_DATA, 0x03, 0},
+    {"Koromon", STAGE_BABY2, SYMBOL_ATTACK_BUBBLE_L, 10, 1800, 1800, 0, 1, 20, POOP_FREQUENCY_BABY2, EVOLUTION_TIME_BABY2, TYPE_DATA, 0x03, 1},
+    {"Botamon", STAGE_BABY1, SYMBOL_ATTACK_BUBBLE_L, 5, 180, 180, 0, 1, 20, POOP_FREQUENCY_BABY1, EVOLUTION_TIME_BABY1, TYPE_DATA, 0x03, 1},
+    {"Betamon", STAGE_ROOKIE, SYMBOL_ATTACK_ZAP, 20, 2880, 2880, 20, 2, 21, POOP_FREQUENCY_ROOKIE, EVOLUTION_TIME_ROOKIE, TYPE_DATA, 0x03, 0},
+    {"Greymon", STAGE_ADULT, SYMBOL_ATTACK_BLAST, 30, 3540, 3540, 30, 1, 21,POOP_FREQUENCY_ADULT, EVOLUTION_TIME_ADULT, TYPE_VACCINE,0x03, 0},
+    {"Devimon", STAGE_ADULT, SYMBOL_ATTACK_GLOVE, 40, 2880, 2880, 30, 1, 23,POOP_FREQUENCY_ADULT, EVOLUTION_TIME_ADULT, TYPE_VIRUS, 0x03, 0},
+    {"Airdramon", STAGE_ADULT, SYMBOL_ATTACK_NEEDLE, 30, 2280, 2280, 30, 1, 23, POOP_FREQUENCY_ADULT,EVOLUTION_TIME_ADULT, TYPE_VACCINE, 0x03, 0},
+    {"Numemon", STAGE_ADULT, SYMBOL_ATTACK_POOP, 10, 1680, 1680, 30, 3, 0, POOP_FREQUENCY_ADULT, EVOLUTION_TIME_ADULT, TYPE_VIRUS, 0x03, 0},
+    {"Tyranomon", STAGE_ADULT, SYMBOL_ATTACK_BLAST, 20, 3540, 3540, 30, 2, 22, POOP_FREQUENCY_ADULT, EVOLUTION_TIME_ADULT, TYPE_DATA, 0x03, 0},
+    {"Meramon", STAGE_ADULT, SYMBOL_ATTACK_GLOVE, 30, 2880, 2880, 30, 2, 0, POOP_FREQUENCY_ADULT, EVOLUTION_TIME_ADULT, TYPE_DATA, 0x03, 0},
+    {"Seadramon", STAGE_ADULT, SYMBOL_ATTACK_NEEDLE, 20, 2280, 2280, 30, 2, 23, POOP_FREQUENCY_ADULT, EVOLUTION_TIME_ADULT, TYPE_DATA, 0x03, 0},
+    {"Metal Greymon", STAGE_PERFECT, SYMBOL_ATTACK_MISSILE, 40, 3540, 3540, 40, 1, 20, POOP_FREQUENCY_PERFECT, EVOLUTION_TIME_PERFECT, TYPE_VIRUS, 0x03, 0},
+    {"Monzaemon", STAGE_PERFECT, SYMBOL_ATTACK_HEART, 40, 2880, 2880, 40, 1, 21, POOP_FREQUENCY_PERFECT, EVOLUTION_TIME_PERFECT, TYPE_VACCINE, 0x03, 0},
+    {"Mamemon", STAGE_PERFECT, SYMBOL_ATTACK_BOMB, 5, 3540, 3540, 40, 1, 23, POOP_FREQUENCY_PERFECT, EVOLUTION_TIME_PERFECT, TYPE_DATA, 0x03, 0},
+    {"Blitz Greymon", STAGE_ULTIMATE, SYMBOL_ATTACK_MISSILE, 50, 3540, 3540, 50, 1, 23, POOP_FREQUENCY_ULTIMATE, EVOLUTION_TIME_PERFECT, TYPE_VIRUS, 0x03, 0},
+    {"Bancho Mamemon", STAGE_ULTIMATE, SYMBOL_ATTACK_BOMB, 5, 3540, 3540, 50, 1, 23, POOP_FREQUENCY_ULTIMATE, EVOLUTION_TIME_PERFECT, TYPE_DATA, 0x03, 0},
+    {"Omegamon Alter-S", STAGE_SUPER_ULTIMATE, SYMBOL_ATTACK_BLAST, 40, 3960, 3960, 50, 1, 23, POOP_FREQUENCY_ULTIMATE, EVOLUTION_TIME_PERFECT, TYPE_VIRUS, 0x03, 0},
 };
 
 const NormalEvolutionData NORMALEVOLUTIONDATA[N_DIGIMON][N_EVOLUTIONS] PROGMEM = {
@@ -218,7 +220,7 @@ class Digimon{
         uint8_t hunger=0;
         uint16_t appetite=0;
         uint8_t strength=0;
-        uint8_t effort;
+        uint8_t effort=0;
         uint8_t digimonPower; //dp
         uint8_t hungerHeartsCount=0;
         uint8_t strengthHeartsCount=0;
@@ -234,7 +236,7 @@ class Digimon{
 
         uint8_t injuryCount;
         boolean isInjured;
-        uint8_t numberOfTrainingSessions;
+        uint8_t numberOfTrainingSessions=0;
         //uint16_t singleTotalBattleRecord
         //uint16_t tagTotalBattleRecord
         //uint16_t singleTotalBattleWins
@@ -253,8 +255,9 @@ class Digimon{
 
         std::function<void()> turnOnScreenCallback;
 
-        void updateTimers(unsigned long delta);
+        uint8_t effortHeartCount = 0;
 
+        void updateTimers(unsigned long delta);
 
     public:
 
@@ -300,6 +303,7 @@ class Digimon{
         void setSleepDisturbanceCount(uint8_t _sleepDisturbanceCount){sleepDisturbanceCount=_sleepDisturbanceCount;};
         void setEvolved(boolean _evolved){evolved=_evolved;};
         void setVictoryCount(uint16_t _victoryCount){victoryCount=_victoryCount;};
+        void setEffortHeartCount(uint8_t count) { effortHeartCount = count; }
         
         void setTurnOnScreenCallback(std::function<void()> callback) {
             turnOnScreenCallback = callback;
@@ -339,6 +343,8 @@ class Digimon{
         boolean getCanReturnToSleepCheck(){return canReturnToSleepCheck;};
         uint8_t getSleepDisturbanceCount(){return sleepDisturbanceCount;};
         uint16_t getVictoryCount(){return victoryCount;};
+        uint16_t getMinWeight() const { return properties->minWeight; }
+        uint8_t getEffortHeartCount() const { return effortHeartCount; }
      
 
 
@@ -356,6 +362,10 @@ class Digimon{
         void addCareMistake(int8_t m){careMistakes+=m;};
         void addOverfeed(int8_t of){overfeedCount+=of;};
         void addVictory(int8_t v){victoryCount+=v;};
+        void addTrainingSession(int8_t t){numberOfTrainingSessions+=t;};
+        void addEffort(int8_t e) {
+            effort += e;
+        }
         // void addStrength(int8_t s){strength+=s;};
         // void loseStrength(int8_t s){strength -=s;};
 

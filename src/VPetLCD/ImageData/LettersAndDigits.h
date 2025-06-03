@@ -1,3 +1,5 @@
+#ifndef LETTERS_AND_DIGITS_H
+#define LETTERS_AND_DIGITS_H
 
 #if defined(__AVR__)
 #include <avr/pgmspace.h>
@@ -407,3 +409,5 @@ const byte CAPITAL_ALPHABET_SMALL [26][6] PROGMEM = {
 
 
 };
+
+#endif // LETTERS_AND_DIGITS_H

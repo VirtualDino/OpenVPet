@@ -3,6 +3,9 @@
 #include "ImageData/DigimonSprites.h"
 #include "ImageData/LettersAndDigits.h"
 #include "ImageData/HighResMenuItems.h"
+#include "ImageData/TrainingMeter.h"
+#include "ImageData/LargeIcons.h"
+#include "ImageData/LargeElements.h"
 #include <Arduino.h>
 
 
@@ -26,6 +29,8 @@ class AbstractSpriteManager{
         virtual const uint8_t getSmallCapitalLetterWidth(char c)=0;
         virtual const byte* getSymbol(uint16_t symbolIndex)=0;
         virtual const uint32_t* getHighResMenuItem(uint16_t menuItemIndex)=0;
+        virtual const uint16_t* getLargeIcon(uint16_t iconIndex)=0;
+        virtual const uint32_t* getLargeElement(uint16_t elementIndex)=0;
         virtual ~AbstractSpriteManager(){};
 };
 
