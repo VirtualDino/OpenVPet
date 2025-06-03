@@ -18,6 +18,7 @@
 #include "VPetLCD/Screens/ClockScreen.h"
 #include "VPetLCD/Screens/DigimonWatchingScreen.h"
 #include "VPetLCD/Screens/AnimationScreens/EatingAnimationScreen.h"
+#include "VPetLCD/Screens/TrainingScreen.h"
 
 
 #include "GameLogic/ScreenStateMachine.h"
@@ -79,12 +80,14 @@ VPetLCDMenuBar32p menuBar(9, 5, displayHeight);
 
 V20::DigimonWatchingScreen digimonScreen(&spriteManager, digimon.getDigimonIndex(), digimon, 0, 35, 0, 0);
 V20::DigimonNameScreen digiNameScreen(&spriteManager, dataLoader.getDigimonProperties(digiIndex)->digiName, digimon.getDigimonIndex(), 24);
-V20::AgeWeightScreen ageWeightScreen(5, 21);
+// V20::AgeWeightScreen ageWeightScreen(5, 21);
+V20::AgeWeightScreen ageWeightScreen(digimon.getAge(), digimon.getWeight());
 // V20::HeartsScreen hungryScreen("Hungry", 2, 4);
 V20::HeartsScreen hungryScreen("Hungry", digimon.getHungerHeartsCount(), 4);
 // V20::HeartsScreen strengthScreen("Strength", 3, 4);
 V20::HeartsScreen strengthScreen("Strength", digimon.getStrengthHeartsCount(), 4);
-V20::HeartsScreen effortScreen("Effort", 4, 4);
+// V20::HeartsScreen effortScreen("Effort", 4, 4);
+V20::HeartsScreen effortScreen("Effort", digimon.getEffortHeartCount(), 4);
 V20::ProgressBarScreen dpScreen("DP", 29, 40);
 V20::PercentageScreen sPercentageScreen("WIN", 'S', 100);
 V20::PercentageScreen tPercentageScreen("WIN", 'T', 93);
@@ -94,9 +97,10 @@ V20::ClockScreen clockScreen(true);
 V20::EatingAnimationScreen eatingAnimationScreen(&spriteManager, digimon.getDigimonIndex());
 V20::SelectionScreen testSelection(true);
 V20::SelectionScreen settingsSelection(true);
+V20::TrainingScreen trainingScreen(digimon, &spriteManager);
 
 //15 screens and 3 signals (one for each button)
-uint8_t numberOfScreens = 15;
+uint8_t numberOfScreens = 16;
 uint8_t numberOfSignals = 3;
 
 uint8_t confirmSignal = 0;
@@ -122,6 +126,7 @@ uint8_t clockScreenId = stateMachine.addScreen(&clockScreen);
 uint8_t eatingAnimationScreenId = stateMachine.addScreen(&eatingAnimationScreen);
 uint8_t testSelectionId = stateMachine.addScreen(&testSelection);
 uint8_t settingsSelectionId = stateMachine.addScreen(&settingsSelection);
+uint8_t trainingScreenId = stateMachine.addScreen(&trainingScreen);
 
 uint8_t poop=0;
 
@@ -159,7 +164,6 @@ void initWiFiAndSyncTimezone() {
 void stateMachineInit() {
   const DigimonProperties *properties = dataLoader.getDigimonProperties(digimon.getDigimonIndex());
   digimon.setProperties(properties);
-
 
   //return to food selection screen after showing eating animation
   eatingAnimationScreen.setAnimationEndAction([]() {
@@ -207,10 +211,9 @@ void stateMachineInit() {
       // hungryScreen.setHearts(4-4*digimon.getHunger()/10);
       hungryScreen.setHearts(digimon.getHungerHeartsCount());
       strengthScreen.setHearts(digimon.getStrengthHeartsCount());
-      
-      if(maxdp >0){
+      if(maxdp > 0){
         dpScreen.setFillPercentage((digimon.getDigimonPower()*100)/maxdp);
-      }else{
+      } else {
         dpScreen.setFillPercentage(0);
       }
       ageWeightScreen.setAge(digimon.getAge());
@@ -222,7 +225,12 @@ void stateMachineInit() {
       stateMachine.setCurrentScreen(foodSelectionId);
       break;
     case 2:
-      // Add your logic here if needed
+      if (digimon.getProperties()->stage != STAGE_BABY1 && digimon.getProperties()->stage != STAGE_BABY2) {
+        stateMachine.setCurrentScreen(trainingScreenId);
+        trainingScreen.onEnter();
+      } else {
+        Serial.println("Cannot navigate to TrainingScreen: Digimon stage is too low.");
+      }
       break;
     case 3:
       fightSelection.setSelection(0);
@@ -236,12 +244,12 @@ void stateMachineInit() {
       testSelection.setSelection(0);
       stateMachine.setCurrentScreen(testSelectionId);
       break;
-    case 8: // Settings menu 
+    case 8: // Settings menu
       settingsSelection.setSelection(0);
       stateMachine.setCurrentScreen(settingsSelectionId);
       break;
     }
-    });
+  });
 
 
   //adding functionality of buttons in food screen:
@@ -463,6 +471,21 @@ void stateMachineInit() {
   stateMachine.addTransition(settingsSelectionId, settingsSelectionId, nextSignal);
   stateMachine.addTransitionAction(settingsSelectionId, nextSignal, []() {
     settingsSelection.nextSelection();
+  });
+
+  
+  stateMachine.addTransition(trainingScreenId, trainingScreenId, confirmSignal);
+  stateMachine.addTransitionAction(trainingScreenId, confirmSignal, []() {
+    trainingScreen.handleConfirmSignal(&screen);
+  });
+
+
+  trainingScreen.setAnimationEndAction([]() {
+    stateMachine.setCurrentScreen(digimonScreenId);
+  });
+
+  trainingScreen.setNotifyMainCallback([]() {
+    effortScreen.setHearts(digimon.getEffortHeartCount());
   });
 }
 
@@ -807,6 +830,10 @@ void loop()
 
   unsigned long t2 = millis();
   lastDelta = t2 - t1;
+
+  if (stateMachine.getCurrentScreen() == &trainingScreen) {
+    trainingScreen.loop(&screen, lastDelta);
+  }
 }
 
 

@@ -469,3 +469,46 @@ boolean VPetLCD::Screen::isNextFrameTime(long delta) {
   return false;
 
 }
+
+void VPetLCD::drawMeter(const uint32_t toDraw[], uint16_t spriteWidth, uint16_t spriteHeight, int16_t onLcdX, int16_t onLcdY, boolean mirror, uint16_t color) {
+
+  for (int currentY = 0; currentY < spriteHeight; currentY++) {
+
+    uint32_t mask = 0b1000000000000000000000000000001;
+    if (mirror)
+      mask = 0b0000000000000000000000000000001;
+
+    for (int currentX = 0; currentX < spriteWidth; currentX++) {
+
+      if (toDraw[currentY] & mask) {
+        drawPixelOnLCD(onLcdX + currentX, onLcdY + currentY, color);
+      }
+
+      if (mirror)
+        mask = mask << 1;
+      else
+        mask = mask >> 1;
+    }
+  }
+}
+
+void VPetLCD::drawLargeIcon(const uint16_t icon[], int16_t onLcdX, int16_t onLcdY, boolean mirror, uint16_t color) {
+    for (int y = 0; y < SPRITES_LARGE_ICONS_RESOLUTION; ++y) {
+        for (int x = 0; x < 16; ++x) { // Iterate over the full width of 16 pixels
+            if (icon[y] & (1 << (15 - x))) { // Check if the bit is set
+                drawPixelOnLCD(onLcdX + x, onLcdY + y, color);
+            }
+        }
+    }
+}
+
+void VPetLCD::drawLargeElement(uint16_t index, int16_t onLcdX, int16_t onLcdY, boolean mirror, uint16_t color) {
+    const uint32_t* element = spriteManager->getLargeElement(index);
+    for (int y = 0; y < SPRITES_LARGE_ELEMENTS_RESOLUTION; ++y) {
+        for (int x = 0; x < 32; ++x) { // Iterate over the full width of 32 pixels
+            if (element[y] & (1 << (31 - x))) { // Check if the bit is set
+                drawPixelOnLCD(onLcdX + x, onLcdY + y, color);
+            }
+        }
+    }
+}

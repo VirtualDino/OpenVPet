@@ -66,6 +66,12 @@ class VPetLCD {
     void drawZeroPaddedIntegerOnLCD(int16_t integer, int16_t onLcdX, int16_t onLcdY, uint16_t color);
     
     void drawSmallIntegerOnLCD(int16_t digit, int16_t onLcdX, int16_t onLcdY, uint16_t color);
+
+    void drawMeter(const uint32_t toDraw[], uint16_t spriteWidth, uint16_t spriteHeight, int16_t onLcdX, int16_t onLcdY, boolean mirror, uint16_t color);
+
+    void drawLargeIcon(const uint16_t icon[], int16_t onLcdX, int16_t onLcdY, boolean mirror, uint16_t color);
+
+    void drawLargeElement(uint16_t index, int16_t onLcdX, int16_t onLcdY, boolean mirror, uint16_t color);
 //----------------------------
 
     

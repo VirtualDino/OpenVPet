@@ -40,3 +40,15 @@ const byte* ESP32SpriteManager::getSymbol(uint16_t symbolIndex){
 const uint32_t* ESP32SpriteManager::getHighResMenuItem(uint16_t menuItemIndex){
     return MENU_ITEMS[menuItemIndex];
 }
+
+const uint32_t* ESP32SpriteManager::getTrainingMeter(uint16_t meterIndex){
+    return TRAINING_METER[meterIndex];
+}
+
+const uint16_t* ESP32SpriteManager::getLargeIcon(uint16_t iconIndex){
+    return LARGE_ICONS[iconIndex];
+}
+
+const uint32_t* ESP32SpriteManager::getLargeElement(uint16_t elementIndex){
+    return LARGE_ELEMENTS[elementIndex];
+}
